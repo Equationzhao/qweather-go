@@ -16,7 +16,7 @@ func TestGet(t *testing.T) {
 		Number:   20,
 		Range:    "cn",
 	}
-	resp, err := SearchCity(para, key)
+	resp, err := SearchCity(para, key, nil)
 	if err != nil {
 		t.Error(err)
 	}
@@ -32,7 +32,7 @@ func TestHitCity(t *testing.T) {
 		Number: 20,
 		Range:  "cn",
 	}
-	resp, err := HitCity(para, key)
+	resp, err := HitCity(para, key, nil)
 	if err != nil {
 		t.Error(err)
 	}
@@ -50,7 +50,7 @@ func TestPOI(t *testing.T) {
 		Number:   20,
 		Type:     Scenic,
 	}
-	resp, err := POI(para, key)
+	resp, err := POI(para, key, nil)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -63,13 +63,13 @@ func TestPOI(t *testing.T) {
 func TestPOIRange(t *testing.T) {
 
 	para := &Para{
-		Location: "北京",
+		Location: "116.41,39.92",
 		Lang:     "zh",
 		Number:   20,
 		Type:     Scenic,
 		Radius:   20,
 	}
-	resp, err := POIRange(para, key)
+	resp, err := POIRange(para, key, nil)
 	if err != nil {
 		t.Fatal(err)
 	}

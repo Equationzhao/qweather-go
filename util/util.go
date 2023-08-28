@@ -4,6 +4,8 @@ import (
 	"io"
 	"net/http"
 	"strings"
+
+	qweathergo "qweather"
 )
 
 func Url(Endpoint string, u ...string) string {
@@ -21,14 +23,8 @@ func Url(Endpoint string, u ...string) string {
 	return b.String()
 }
 
-func Get(url string, f func(r *http.Request)) ([]byte, error) {
-	httpClient := &http.Client{}
-	req, err := http.NewRequest("GET", url, nil)
-	if err != nil {
-		return nil, err
-	}
-	f(req)
-	resp, err := httpClient.Do(req)
+func Get(req *http.Request, client qweathergo.Client) ([]byte, error) {
+	resp, err := client.Do(req)
 	if err != nil {
 		return nil, err
 	}
@@ -38,4 +34,13 @@ func Get(url string, f func(r *http.Request)) ([]byte, error) {
 		return nil, err
 	}
 	return all, nil
+}
+
+func Request(url string, f func(r *http.Request)) (*http.Request, error) {
+	req, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		return nil, err
+	}
+	f(req)
+	return req, nil
 }

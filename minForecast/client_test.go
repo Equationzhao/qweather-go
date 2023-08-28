@@ -13,7 +13,7 @@ func TestMinPrecipitation(t *testing.T) {
 		Location: "116.41,39.92",
 		Lang:     "zh",
 	}
-	resp, err := MinPrecipitation(para, key, true)
+	resp, err := MinPrecipitation(para, key, true, nil)
 	if err != nil {
 		t.Fatal(err)
 	}

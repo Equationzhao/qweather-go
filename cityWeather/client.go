@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"strconv"
 
+	qweathergo "qweather"
 	"qweather/json"
 	"qweather/util"
 )
@@ -48,8 +49,30 @@ func url(isFreePlan bool, u ...string) string {
 //	para 为请求参数
 //	key 为用户认证key
 //	isFreePlan 为是否为免费用户, 若是，则将上述API Host更改为devapi.qweather.com。参考免费订阅可用的数据(https://dev.qweather.com/docs/finance/subscription/#comparison)。
-func RealTime(para *Para, key string, isFreePlan bool) (*RealTimeResponse, error) {
-	get, err := util.Get(
+//	client 为自定义的 Client, 若为nil, 则使用http.DefaultClient
+func RealTime(para *Para, key string, isFreePlan bool, client qweathergo.Client) (*RealTimeResponse, error) {
+
+	req, err := RealTimeRequest(para, key, isFreePlan)
+	if err != nil {
+		return nil, err
+	}
+	if client == nil {
+		client = http.DefaultClient
+	}
+	get, err := util.Get(req, client)
+	if err != nil {
+		return nil, err
+	}
+	var response RealTimeResponse
+	err = json.Unmarshal(get, &response)
+	if err != nil {
+		return nil, err
+	}
+	return &response, nil
+}
+
+func RealTimeRequest(para *Para, key string, isFreePlan bool) (*http.Request, error) {
+	r, err := util.Request(
 		url(isFreePlan, "now"), func(r *http.Request) {
 			q := r.URL.Query()
 			q.Add("key", key)
@@ -62,13 +85,8 @@ func RealTime(para *Para, key string, isFreePlan bool) (*RealTimeResponse, error
 	if err != nil {
 		return nil, err
 	}
+	return r, nil
 
-	var response RealTimeResponse
-	err = json.Unmarshal(get, &response)
-	if err != nil {
-		return nil, err
-	}
-	return &response, nil
 }
 
 // Now
@@ -118,8 +136,30 @@ var Now = RealTime
 //	key 为用户认证key
 //	count 为天数
 //	isFreePlan 为是否为免费用户, 若是，则将上述API Host更改为devapi.qweather.com。参考免费订阅可用的数据(https://dev.qweather.com/docs/finance/subscription/#comparison)。
-func Daily(para *Para, key string, count uint8, isFreePlan bool) (*DaysResponse, error) {
-	get, err := util.Get(
+//	client 为自定义的 Client, 若为nil, 则使用 http.DefaultClient
+func Daily(para *Para, key string, count uint8, isFreePlan bool, client qweathergo.Client) (*DaysResponse, error) {
+
+	req, err := DailyRequest(para, key, count, isFreePlan)
+	if err != nil {
+		return nil, err
+	}
+	if client == nil {
+		client = http.DefaultClient
+	}
+	get, err := util.Get(req, client)
+	if err != nil {
+		return nil, err
+	}
+	var response DaysResponse
+	err = json.Unmarshal(get, &response)
+	if err != nil {
+		return nil, err
+	}
+	return &response, nil
+}
+
+func DailyRequest(para *Para, key string, count uint8, isFreePlan bool) (*http.Request, error) {
+	r, err := util.Request(
 		url(isFreePlan, strconv.Itoa(int(count))+"d"), func(r *http.Request) {
 			q := r.URL.Query()
 			q.Add("key", key)
@@ -132,13 +172,7 @@ func Daily(para *Para, key string, count uint8, isFreePlan bool) (*DaysResponse,
 	if err != nil {
 		return nil, err
 	}
-
-	var response DaysResponse
-	err = json.Unmarshal(get, &response)
-	if err != nil {
-		return nil, err
-	}
-	return &response, nil
+	return r, nil
 }
 
 // Hourly 逐小时天气预报
@@ -178,8 +212,31 @@ func Daily(para *Para, key string, count uint8, isFreePlan bool) (*DaysResponse,
 //	key 为用户认证key
 //	count 为小时数
 //	isFreePlan 为是否为免费用户, 若是，则将上述API Host更改为devapi.qweather.com。参考免费订阅可用的数据(https://dev.qweather.com/docs/finance/subscription/#comparison)。
-func Hourly(para *Para, key string, count uint8, isFreePlan bool) (*HourlyResponse, error) {
-	get, err := util.Get(
+//	client 为自定义的 Client, 若为nil, 则使用http.DefaultClient
+func Hourly(para *Para, key string, count uint8, isFreePlan bool, client qweathergo.Client) (*HourlyResponse, error) {
+
+	req, err := HourlyRequest(para, key, count, isFreePlan)
+	if err != nil {
+		return nil, err
+	}
+	if client == nil {
+		client = http.DefaultClient
+	}
+	get, err := util.Get(req, client)
+	if err != nil {
+		return nil, err
+	}
+
+	var response HourlyResponse
+	err = json.Unmarshal(get, &response)
+	if err != nil {
+		return nil, err
+	}
+	return &response, nil
+}
+
+func HourlyRequest(para *Para, key string, count uint8, isFreePlan bool) (*http.Request, error) {
+	r, err := util.Request(
 		url(isFreePlan, strconv.Itoa(int(count))+"h"), func(r *http.Request) {
 			q := r.URL.Query()
 			q.Add("key", key)
@@ -192,11 +249,5 @@ func Hourly(para *Para, key string, count uint8, isFreePlan bool) (*HourlyRespon
 	if err != nil {
 		return nil, err
 	}
-
-	var response HourlyResponse
-	err = json.Unmarshal(get, &response)
-	if err != nil {
-		return nil, err
-	}
-	return &response, nil
+	return r, nil
 }
