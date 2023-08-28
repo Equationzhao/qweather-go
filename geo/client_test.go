@@ -22,7 +22,7 @@ func TestGet(t *testing.T) {
 	}
 	t.Log(resp)
 	if resp.Code != "200" {
-		t.Error("code not 200")
+		t.Error("return code is not 200")
 	}
 }
 
@@ -38,7 +38,7 @@ func TestHitCity(t *testing.T) {
 	}
 	t.Log(resp)
 	if resp.Code != "200" {
-		t.Error("code not 200")
+		t.Error("return code is not 200")
 	}
 }
 
@@ -52,11 +52,11 @@ func TestPOI(t *testing.T) {
 	}
 	resp, err := POI(para, key)
 	if err != nil {
-		t.Error(err)
+		t.Fatal(err)
 	}
 	t.Log(resp)
 	if resp.Code != "200" {
-		t.Error("code not 200")
+		t.Error("return code is not 200")
 	}
 }
 
@@ -71,10 +71,10 @@ func TestPOIRange(t *testing.T) {
 	}
 	resp, err := POIRange(para, key)
 	if err != nil {
-		t.Error(err)
+		t.Fatal(err)
 	}
 	t.Log(resp)
 	if resp.Code != "200" {
-		t.Error("code not 200")
+		t.Error("return code is not 200")
 	}
 }

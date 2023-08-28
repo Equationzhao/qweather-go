@@ -16,6 +16,11 @@ func (t Type) String() string {
 }
 
 const (
+	// scenic 景点 Scenic
+	//
+	// CSTA 潮流站点
+	//
+	// TSTA 潮汐站点
 	_ Type = iota
 	Scenic
 	CSTA
