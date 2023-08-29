@@ -2,7 +2,7 @@ package qweather_go
 
 import (
 	"crypto/md5"
-	"fmt"
+	"encoding/hex"
 	"net/http"
 	"net/url"
 	"sort"
@@ -36,34 +36,30 @@ import (
 // GetSignature 和风天气签名生成算法-Golang版本
 // https://github.com/Ink-33/go-heweather/blob/main/v7/client.go#L65C2-L65C2
 // From https://github.com/Ink-33/go-heweather/blob/3695eeab1c0d1590ced1fb3d3fd4dadd3f014245/v7/client.go#L65C2-L65C2
-func GetSignature(publicID, key string, para url.Values) (signature string) {
-	var sa []string
-	var escapesa []string
-
-	for k, v := range para {
-		if len(v) == 0 || k == "sign" {
+func getSignature(key string, param url.Values) (signature string) {
+	sa := make([]string, 0, len(param)+2)
+	for k, v := range param {
+		if len(v) == 0 || v[0] == "" {
 			continue
 		}
-		sa = append(sa, k+"="+v[0])
-		escapesa = append(escapesa, k+"="+v[0])
+		sa = append(sa, k+"="+strings.Join(v, ","))
 	}
 
-	timestamp := strconv.FormatInt(time.Now().Unix(), 10)
-	sa = append(sa, "t="+timestamp, "publicid="+publicID)
-	escapesa = append(escapesa, "t="+timestamp, "publicid="+publicID)
 	sort.Strings(sa)
-	sort.Strings(escapesa)
+	return _MD5(strings.Join(sa, "&") + key)
+}
 
-	md5c := md5.New()
-	md5c.Reset()
-	_, _ = md5c.Write([]byte(strings.Join(sa, "&") + key))
-	return fmt.Sprintf("%x", md5c.Sum(nil))
+func _MD5(s string) string {
+	sum := md5.Sum([]byte(s))
+	return hex.EncodeToString(sum[:])
 }
 
 // ChangeRequest 用于修改请求参数, 将GetSignature得到的签名结果 作为参数添加至请求中，参数名为 sign, 即 sign=xxxxxxx
 func ChangeRequest(publicID, key string, req *http.Request) {
 	q := req.URL.Query()
-	signature := GetSignature(publicID, key, q)
-	q.Add("sign", signature)
+	q.Del("key")
+	q.Add("t", strconv.FormatInt(time.Now().Unix(), 10))
+	q.Add("publicid", publicID)
+	q.Add("sign", getSignature(key, q))
 	req.URL.RawQuery = q.Encode()
 }
