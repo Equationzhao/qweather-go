@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"strings"
 
-	qweathergo "qweather"
+	"github.com/Equationzhao/qweather-go"
 )
 
 func Url(Endpoint string, u ...string) string {
@@ -23,7 +23,7 @@ func Url(Endpoint string, u ...string) string {
 	return b.String()
 }
 
-func Get(req *http.Request, client qweathergo.Client) ([]byte, error) {
+func Get(req *http.Request, client qweather.Client) ([]byte, error) {
 	resp, err := client.Do(req)
 	if err != nil {
 		return nil, err

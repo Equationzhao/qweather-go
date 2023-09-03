@@ -1,9 +1,8 @@
-package qweather_go
+package qweather
 
 import (
 	"crypto/md5"
 	"encoding/hex"
-	"net/http"
 	"net/url"
 	"sort"
 	"strconv"
@@ -54,12 +53,8 @@ func _MD5(s string) string {
 	return hex.EncodeToString(sum[:])
 }
 
-// ChangeRequest 用于修改请求参数, 将GetSignature得到的签名结果 作为参数添加至请求中，参数名为 sign, 即 sign=xxxxxxx
-func ChangeRequest(publicID, key string, req *http.Request) {
-	q := req.URL.Query()
-	q.Del("key")
+func AddSignature(publicID string, key string, q url.Values) {
 	q.Add("t", strconv.FormatInt(time.Now().Unix(), 10))
 	q.Add("publicid", publicID)
 	q.Add("sign", getSignature(key, q))
-	req.URL.RawQuery = q.Encode()
 }

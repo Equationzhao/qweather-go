@@ -1,4 +1,4 @@
-package qweather_go
+package qweather
 
 import (
 	"net/http"
@@ -46,4 +46,10 @@ func (c *DefaultClient) SetConfig(config *Config) {
 	c.Transport = config.Proxy
 	c.CheckRedirect = config.CheckRedirect
 	c.Jar = config.Jar
+}
+
+type Credential struct {
+	Key      string
+	PublicID string
+	Encrypt  bool
 }

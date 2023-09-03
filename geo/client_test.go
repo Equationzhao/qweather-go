@@ -3,16 +3,26 @@ package geo
 import (
 	"os"
 	"testing"
+
+	"github.com/Equationzhao/qweather-go"
+	"github.com/Equationzhao/qweather-go/lang"
 )
 
-var key = os.Getenv("qweather_key")
+var (
+	k        = os.Getenv("qweather_key")
+	publicID = os.Getenv("qweather_public_id")
+	key      = qweather.Credential{
+		Key:      k,
+		PublicID: publicID,
+		Encrypt:  true,
+	}
+)
 
 func TestGet(t *testing.T) {
-
 	para := &Para{
 		Location: "深圳",
 		Adm:      "深圳",
-		Lang:     "zh",
+		Lang:     lang.ZHCN,
 		Number:   20,
 		Range:    "cn",
 	}
@@ -27,7 +37,6 @@ func TestGet(t *testing.T) {
 }
 
 func TestHitCity(t *testing.T) {
-
 	para := &Para{
 		Number: 20,
 		Range:  "cn",
@@ -43,7 +52,6 @@ func TestHitCity(t *testing.T) {
 }
 
 func TestPOI(t *testing.T) {
-
 	para := &Para{
 		Location: "北京",
 		Lang:     "zh",
@@ -61,7 +69,6 @@ func TestPOI(t *testing.T) {
 }
 
 func TestPOIRange(t *testing.T) {
-
 	para := &Para{
 		Location: "116.41,39.92",
 		Lang:     "zh",

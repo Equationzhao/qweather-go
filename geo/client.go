@@ -2,11 +2,12 @@ package geo
 
 import (
 	"net/http"
+	nurl "net/url"
 	"strconv"
 
-	qweather_go "qweather"
-	"qweather/json"
-	"qweather/util"
+	"github.com/Equationzhao/qweather-go"
+	"github.com/Equationzhao/qweather-go/internal/json"
+	"github.com/Equationzhao/qweather-go/util"
 )
 
 const EndPoint = "https://geoapi.qweather.com/v2/"
@@ -61,7 +62,7 @@ func url(u ...string) string {
 //	para 为请求参数
 //	key 为用户认证key
 //	client 为自定义的 Client, 若为nil, 则使用http.DefaultClient
-func SearchCity(para *Para, key string, client qweather_go.Client) (*SearchResponse, error) {
+func SearchCity(para *Para, key qweather.Credential, client qweather.Client) (*SearchResponse, error) {
 	req, err := SearchCityRequest(para, key)
 	if err != nil {
 		return nil, err
@@ -79,6 +80,20 @@ func SearchCity(para *Para, key string, client qweather_go.Client) (*SearchRespo
 		return nil, err
 	}
 	return &response, nil
+}
+
+// SearchCityWithRequiredParam 城市搜索
+// para 为其余参数，可以为 nil
+// 详见 SearchCity
+func SearchCityWithRequiredParam(location string, key qweather.Credential, para *Para, client qweather.Client) (*SearchResponse, error) {
+	if para == nil {
+		para = &Para{
+			Location: location,
+		}
+	} else {
+		para.Location = location
+	}
+	return SearchCity(para, key, client)
 }
 
 // SearchCityRequest 城市搜索
@@ -126,16 +141,20 @@ func SearchCity(para *Para, key string, client qweather_go.Client) (*SearchRespo
 //
 //	para 为请求参数
 //	key 为用户认证key
-func SearchCityRequest(para *Para, key string) (*http.Request, error) {
+func SearchCityRequest(para *Para, key qweather.Credential) (*http.Request, error) {
 	r, err := util.Request(
 		url("city", "lookup"), func(r *http.Request) {
-			q := r.URL.Query()
-			q.Add("key", key)
+			q := nurl.Values{}
 			q.Add("location", para.Location)
 			q.Add("adm", para.Adm)
 			q.Add("lang", para.Lang)
 			q.Add("number", strconv.Itoa(int(para.Number)))
 			q.Add("range", para.Range)
+			if key.Encrypt {
+				qweather.AddSignature(key.PublicID, key.Key, q)
+			} else {
+				q.Add("key", key.Key)
+			}
 			r.URL.RawQuery = q.Encode()
 		},
 	)
@@ -143,6 +162,20 @@ func SearchCityRequest(para *Para, key string) (*http.Request, error) {
 		return nil, err
 	}
 	return r, nil
+}
+
+// SearchCityRequestWithRequiredParam 城市搜索
+// para 为其余参数，可以为 nil
+// 详见 SearchCityRequest
+func SearchCityRequestWithRequiredParam(location string, key qweather.Credential, para *Para) (*http.Request, error) {
+	if para == nil {
+		para = &Para{
+			Location: location,
+		}
+	} else {
+		para.Location = location
+	}
+	return SearchCityRequest(para, key)
 }
 
 // HitCity 热门城市查询
@@ -174,14 +207,13 @@ func SearchCityRequest(para *Para, key string) (*http.Request, error) {
 //	para 为请求参数
 //	key 为用户认证key
 //	client 为自定义的 Client, 若为nil, 则使用http.DefaultClient
-func HitCity(para *Para, key string, client qweather_go.Client) (*HitResponse, error) {
+func HitCity(para *Para, key qweather.Credential, client qweather.Client) (*HitResponse, error) {
 	req, err := HitCityRequest(para, key)
 	if err != nil {
 		return nil, err
 	}
 	if client == nil {
 		client = http.DefaultClient
-
 	}
 	get, err := util.Get(req, client)
 	if err != nil {
@@ -223,13 +255,20 @@ func HitCity(para *Para, key string, client qweather_go.Client) (*HitResponse, e
 //
 //	para 为请求参数
 //	key 为用户认证key
-func HitCityRequest(para *Para, key string) (*http.Request, error) {
+func HitCityRequest(para *Para, key qweather.Credential) (*http.Request, error) {
 	r, err := util.Request(
 		url("city", "top"), func(r *http.Request) {
-			q := r.URL.Query()
-			q.Add("key", key)
+			q := nurl.Values{}
+			q.Add("location", para.Location)
+			q.Add("adm", para.Adm)
+			q.Add("lang", para.Lang)
 			q.Add("number", strconv.Itoa(int(para.Number)))
 			q.Add("range", para.Range)
+			if key.Encrypt {
+				qweather.AddSignature(key.PublicID, key.Key, q)
+			} else {
+				q.Add("key", key.Key)
+			}
 			r.URL.RawQuery = q.Encode()
 		},
 	)
@@ -280,7 +319,7 @@ func HitCityRequest(para *Para, key string) (*http.Request, error) {
 //	para 为请求参数
 //	key 为用户认证key
 //	client 为自定义的 Client, 若为nil, 则使用http.DefaultClient
-func POI(para *Para, key string, client qweather_go.Client) (*POIResponse, error) {
+func POI(para *Para, key qweather.Credential, client qweather.Client) (*POIResponse, error) {
 	req, err := POIRequest(para, key)
 	if err != nil {
 		return nil, err
@@ -298,6 +337,21 @@ func POI(para *Para, key string, client qweather_go.Client) (*POIResponse, error
 		return nil, err
 	}
 	return &response, nil
+}
+
+// POIWithRequiredParam POI搜索
+// para 为其余参数，可以为 nil
+// 详见 POI
+func POIWithRequiredParam(location string, key qweather.Credential, t Type, para *Para, client qweather.Client) (*POIResponse, error) {
+	if para == nil {
+		para = &Para{
+			Location: location,
+			Type:     t,
+		}
+	} else {
+		para.Location = location
+	}
+	return POI(para, key, client)
 }
 
 // POIRequest POI搜索
@@ -340,16 +394,20 @@ func POI(para *Para, key string, client qweather_go.Client) (*POIResponse, error
 //
 //	para 为请求参数
 //	key 为用户认证key
-func POIRequest(para *Para, key string) (*http.Request, error) {
+func POIRequest(para *Para, key qweather.Credential) (*http.Request, error) {
 	r, err := util.Request(
 		url("poi", "lookup"), func(r *http.Request) {
-			q := r.URL.Query()
-			q.Add("key", key)
+			q := nurl.Values{}
 			q.Add("type", para.Type.String())
 			q.Add("location", para.Location)
 			q.Add("city", para.City)
 			q.Add("number", strconv.Itoa(int(para.Number)))
 			q.Add("lang", para.Lang)
+			if key.Encrypt {
+				qweather.AddSignature(key.PublicID, key.Key, q)
+			} else {
+				q.Add("key", key.Key)
+			}
 			r.URL.RawQuery = q.Encode()
 		},
 	)
@@ -357,6 +415,21 @@ func POIRequest(para *Para, key string) (*http.Request, error) {
 		return nil, err
 	}
 	return r, nil
+}
+
+// POIRequestWithRequiredParam POI搜索
+// para 为其余参数，可以为 nil
+// 详见 POIRequest
+func POIRequestWithRequiredParam(location string, key qweather.Credential, t Type, para *Para) (*http.Request, error) {
+	if para == nil {
+		para = &Para{
+			Location: location,
+			Type:     t,
+		}
+	} else {
+		para.Location = location
+	}
+	return POIRequest(para, key)
 }
 
 // POIRange POI范围搜索
@@ -399,7 +472,7 @@ func POIRequest(para *Para, key string) (*http.Request, error) {
 //	para 为请求参数
 //	key 为用户认证key
 //	client 为自定义的 Client, 若为nil, 则使用http.DefaultClient
-func POIRange(para *Para, key string, client qweather_go.Client) (*POIResponse, error) {
+func POIRange(para *Para, key qweather.Credential, client qweather.Client) (*POIResponse, error) {
 	req, err := POIRangeRequest(para, key)
 	if err != nil {
 		return nil, err
@@ -418,6 +491,22 @@ func POIRange(para *Para, key string, client qweather_go.Client) (*POIResponse, 
 		return nil, err
 	}
 	return &response, nil
+}
+
+// POIRangeWithRequiredParam POI范围搜索
+// para 为其余参数，可以为 nil
+// 详见 POIRange
+func POIRangeWithRequiredParam(location string, key qweather.Credential, t Type, radius uint16, para *Para, client qweather.Client) (*POIResponse, error) {
+	if para == nil {
+		para = &Para{
+			Location: location,
+			Type:     t,
+			Radius:   radius,
+		}
+	} else {
+		para.Location = location
+	}
+	return POIRange(para, key, client)
 }
 
 // POIRangeRequest POI范围搜索
@@ -459,16 +548,20 @@ func POIRange(para *Para, key string, client qweather_go.Client) (*POIResponse, 
 //
 //	para 为请求参数
 //	key 为用户认证key
-func POIRangeRequest(para *Para, key string) (*http.Request, error) {
+func POIRangeRequest(para *Para, key qweather.Credential) (*http.Request, error) {
 	r, err := util.Request(
 		url("poi", "range"), func(r *http.Request) {
-			q := r.URL.Query()
-			q.Add("key", key)
+			q := nurl.Values{}
 			q.Add("type", para.Type.String())
 			q.Add("location", para.Location)
 			q.Add("radius", strconv.Itoa(int(para.Radius)))
 			q.Add("number", strconv.Itoa(int(para.Number)))
 			q.Add("lang", para.Lang)
+			if key.Encrypt {
+				qweather.AddSignature(key.PublicID, key.Key, q)
+			} else {
+				q.Add("key", key.Key)
+			}
 			r.URL.RawQuery = q.Encode()
 		},
 	)
@@ -476,4 +569,20 @@ func POIRangeRequest(para *Para, key string) (*http.Request, error) {
 		return nil, err
 	}
 	return r, nil
+}
+
+// POIRangeRequestWithRequiredParam POI范围搜索
+// para 为其余参数，可以为 nil
+// 详见 POIRangeRequest
+func POIRangeRequestWithRequiredParam(location string, key qweather.Credential, t Type, radius uint16, para *Para) (*http.Request, error) {
+	if para == nil {
+		para = &Para{
+			Location: location,
+			Type:     t,
+			Radius:   radius,
+		}
+	} else {
+		para.Location = location
+	}
+	return POIRangeRequest(para, key)
 }

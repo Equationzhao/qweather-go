@@ -1,4 +1,4 @@
-package cityWeather
+package gridWeather
 
 import "github.com/Equationzhao/qweather-go"
 

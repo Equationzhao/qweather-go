@@ -1,4 +1,4 @@
-module qweather
+module github.com/Equationzhao/qweather-go
 
 go 1.21
 

@@ -3,12 +3,21 @@ package minForecast
 import (
 	"os"
 	"testing"
+
+	"github.com/Equationzhao/qweather-go"
 )
 
-var key = os.Getenv("qweather_key")
+var (
+	k        = os.Getenv("qweather_key")
+	publicID = os.Getenv("qweather_public_id")
+	key      = qweather.Credential{
+		Key:      k,
+		PublicID: publicID,
+		Encrypt:  false,
+	}
+)
 
 func TestMinPrecipitation(t *testing.T) {
-
 	para := &Para{
 		Location: "116.41,39.92",
 		Lang:     "zh",
