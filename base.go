@@ -53,3 +53,13 @@ type Credential struct {
 	PublicID string
 	Encrypt  bool
 }
+
+func (c *Credential) SetEncrypt() *Credential {
+	c.Encrypt = true
+	return c
+}
+
+func (c *Credential) UnsetEncrypt() *Credential {
+	c.Encrypt = false
+	return c
+}

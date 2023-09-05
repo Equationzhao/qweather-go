@@ -7,13 +7,14 @@ import (
 
 	"github.com/Equationzhao/qweather-go"
 	"github.com/Equationzhao/qweather-go/internal/json"
+	iutil "github.com/Equationzhao/qweather-go/internal/util"
 	"github.com/Equationzhao/qweather-go/util"
 )
 
 const EndPoint = "https://geoapi.qweather.com/v2/"
 
 func url(u ...string) string {
-	return util.Url(EndPoint, u...)
+	return iutil.Url(EndPoint, u...)
 }
 
 // SearchCity 城市搜索

@@ -3,25 +3,10 @@ package util
 import (
 	"io"
 	"net/http"
-	"strings"
+	"os"
 
 	"github.com/Equationzhao/qweather-go"
 )
-
-func Url(Endpoint string, u ...string) string {
-	b := strings.Builder{}
-	b.WriteString(Endpoint)
-	l := len(u)
-	if l == 0 {
-		return b.String()
-	}
-	for i := 0; i < l-1; i++ {
-		b.WriteString(u[i])
-		b.WriteString("/")
-	}
-	b.WriteString(u[l-1])
-	return b.String()
-}
 
 func Get(req *http.Request, client qweather.Client) ([]byte, error) {
 	resp, err := client.Do(req)
@@ -43,4 +28,21 @@ func Request(url string, f func(r *http.Request)) (*http.Request, error) {
 	}
 	f(req)
 	return req, nil
+}
+
+// Credential  从环境变量中获取 key 与 public id 并生成 *qweather.Credential
+//
+// 参数:
+//
+//	key, public id  环境变量名
+//
+// eg:
+//
+//	Credential("qweather_key","qweather_public_id")
+func Credential(key, publicId string) *qweather.Credential {
+	c := qweather.Credential{
+		Key:      os.Getenv(key),
+		PublicID: os.Getenv(publicId),
+	}
+	return &c
 }

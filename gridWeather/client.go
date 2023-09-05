@@ -7,6 +7,7 @@ import (
 
 	"github.com/Equationzhao/qweather-go"
 	"github.com/Equationzhao/qweather-go/internal/json"
+	iutil "github.com/Equationzhao/qweather-go/internal/util"
 	"github.com/Equationzhao/qweather-go/util"
 )
 
@@ -17,9 +18,9 @@ const (
 
 func url(isFreePlan bool, u ...string) string {
 	if isFreePlan {
-		return util.Url(FreeEndPoint, u...)
+		return iutil.Url(FreeEndPoint, u...)
 	}
-	return util.Url(EndPoint, u...)
+	return iutil.Url(EndPoint, u...)
 }
 
 // RealTime 格点实时天气
