@@ -5,6 +5,7 @@ import (
 	nurl "net/url"
 	"strconv"
 
+	"github.com/Equationzhao/qweather-go"
 	"github.com/Equationzhao/qweather-go/internal/json"
 	"github.com/Equationzhao/qweather-go/util"
 )

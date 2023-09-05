@@ -6,6 +6,7 @@ import (
 	"os"
 	"testing"
 
+	"github.com/Equationzhao/qweather-go"
 	"github.com/Equationzhao/qweather-go/internal/json"
 	itest "github.com/Equationzhao/qweather-go/internal/test"
 )
