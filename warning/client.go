@@ -178,13 +178,13 @@ func CityList(para *Para, key qweather.Credential, isFreePlan bool, client *http
 // CityListWithRequiredParam 天气预警城市列表
 // para 为其余参数，可以为 nil
 // 详见 CityList
-func CityListWithRequiredParam(location string, para *Para, key qweather.Credential, isFreePlan bool, client *http.Client) (*CityListResponse, error) {
+func CityListWithRequiredParam(Range string, para *Para, key qweather.Credential, isFreePlan bool, client *http.Client) (*CityListResponse, error) {
 	if para == nil {
 		para = &Para{
-			Location: location,
+			Range: Range,
 		}
 	} else {
-		para.Location = location
+		para.Range = Range
 	}
 	return CityList(para, key, isFreePlan, client)
 }
