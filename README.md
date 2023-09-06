@@ -15,7 +15,7 @@ go get github.com/Equationzhao/qweather-go
 不需要签名认证时，请获取 key 并设置
 ```go
 key := qweather.Credential{
-    Key      : "your key"
+    Key      : "your key",
     Encrypt  : false,
 }
 ```
