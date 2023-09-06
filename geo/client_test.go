@@ -1,22 +1,13 @@
 package geo
 
 import (
-	"os"
 	"testing"
 
-	"github.com/Equationzhao/qweather-go"
 	"github.com/Equationzhao/qweather-go/lang"
+	"github.com/Equationzhao/qweather-go/util"
 )
 
-var (
-	k        = os.Getenv("qweather_key")
-	publicID = os.Getenv("qweather_public_id")
-	key      = qweather.Credential{
-		Key:      k,
-		PublicID: publicID,
-		Encrypt:  true,
-	}
-)
+var key = *util.Credential("qweather_key", "qweather_public_id").SetEncrypt()
 
 func TestGet(t *testing.T) {
 	para := &Para{

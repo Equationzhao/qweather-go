@@ -3,7 +3,6 @@ package cityWeather
 import (
 	"io"
 	"net/http"
-	"os"
 	"testing"
 	"time"
 
@@ -14,15 +13,7 @@ import (
 	"github.com/Equationzhao/qweather-go/util"
 )
 
-var (
-	k        = os.Getenv("qweather_key")
-	publicID = os.Getenv("qweather_public_id")
-	key      = qweather.Credential{
-		Key:      k,
-		PublicID: publicID,
-		Encrypt:  true,
-	}
-)
+var key = *util.Credential("qweather_key", "qweather_public_id").SetEncrypt()
 
 func helper(t *testing.T, request *http.Request, m any) {
 	t.Helper()
@@ -73,6 +64,7 @@ func TestHourly(t *testing.T) {
 		Lang:     lang.ZHCN,
 		Unit:     qweather.METRIC,
 	}
+	t.Log(key.Key, key.PublicID)
 
 	// 24
 	args := []uint8{24}
