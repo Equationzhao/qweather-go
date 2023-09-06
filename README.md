@@ -12,6 +12,16 @@ go get github.com/Equationzhao/qweather-go
 
 参考 https://dev.qweather.com/docs/configuration/project-and-key/
 
+不需要签名认证时，请获取 key 并设置
+```go
+key := qweather.Credential{
+    Key      : "your key"
+    Encrypt  : false,
+}
+```
+
+需要签名认证时，请参考下文 [加密签名认证](#加密签名认证) 部分
+
 ## 样例
 
 ```go
@@ -151,6 +161,27 @@ para.Lang = lang.ZHCN
 >  免费订阅会将API host改为 devapi.qweather.com。
 > 
 >  但地理信息服务除外，无论免费订阅还是付费订阅，都使用geoapi.qweather.com。
+
+##  自定义json库
+
+内置了 [sonic](https://github.com/bytedance/sonic) 和 [jsoniter](https://github.com/json-iterator/go)
+
+使用 tag 'sonic'/'jsoniter' 来指定使用的 json 库
+
+```shell
+go build -tags sonic
+```
+
+```shell
+go build -tags jsoniter
+```
+
+或者设置 `qweather.SetJsonMarshal(xxx)` / `qweather.SetJsonUnmarshal(xxx)` 来指定使用其他 json 库
+
+```go
+qweather.SetJsonMarshal(MyMarshal)
+qweather.SetJsonUnmarshal(MyUnmarshal)
+```
 
 ## 注意事项
 
