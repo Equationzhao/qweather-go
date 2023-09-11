@@ -3,6 +3,7 @@ package geo
 import (
 	"testing"
 
+	itest "github.com/Equationzhao/qweather-go/internal/test"
 	"github.com/Equationzhao/qweather-go/lang"
 	"github.com/Equationzhao/qweather-go/util"
 )
@@ -17,9 +18,9 @@ func TestGet(t *testing.T) {
 		Number:   20,
 		Range:    "cn",
 	}
-	resp, err := SearchCity(para, key, nil)
+	resp, err := SearchCity(para, key, &itest.NoProxyClient)
 	if err != nil {
-		t.Error(err)
+		t.Fatal(err)
 	}
 	t.Log(resp)
 	if resp.Code != "200" {
@@ -32,9 +33,9 @@ func TestHitCity(t *testing.T) {
 		Number: 20,
 		Range:  "cn",
 	}
-	resp, err := HitCity(para, key, nil)
+	resp, err := HitCity(para, key, &itest.NoProxyClient)
 	if err != nil {
-		t.Error(err)
+		t.Fatal(err)
 	}
 	t.Log(resp)
 	if resp.Code != "200" {
@@ -49,7 +50,7 @@ func TestPOI(t *testing.T) {
 		Number:   20,
 		Type:     Scenic,
 	}
-	resp, err := POI(para, key, nil)
+	resp, err := POI(para, key, &itest.NoProxyClient)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -67,7 +68,7 @@ func TestPOIRange(t *testing.T) {
 		Type:     Scenic,
 		Radius:   20,
 	}
-	resp, err := POIRange(para, key, nil)
+	resp, err := POIRange(para, key, &itest.NoProxyClient)
 	if err != nil {
 		t.Fatal(err)
 	}

@@ -1,3 +1,4 @@
+// Package cityWeather 城市天气
 package cityWeather
 
 import (

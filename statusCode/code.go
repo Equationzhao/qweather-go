@@ -1,3 +1,4 @@
+// Package statusCode 状态码
 package statusCode
 
 const (
@@ -36,4 +37,8 @@ func Translate(code string) string {
 	default:
 		return "Unknown"
 	}
+}
+
+func IsSuccess(code string) bool {
+	return code == Success
 }

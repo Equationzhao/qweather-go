@@ -156,10 +156,38 @@ func TestWithClient(t *testing.T) {
 	for _, arg := range args {
 		resp, err := Daily(para, key, arg, true, &client)
 		if err != nil {
-			t.Fatal(err)
+			t.Error(err)
+			continue
 		}
 		if resp.Code != "200" {
-			t.Fatal("return code is not 200")
+			t.Error("return code is not 200", resp)
+		}
+	}
+}
+
+func TestDays(t *testing.T) {
+	fs := [...]func(para *Para, key qweather.Credential, isFreePlan bool, client qweather.Client) (*DailyResponse, error){
+		Day3,
+		Day7,
+		Day10,
+		Day15,
+		Day30,
+	}
+
+	para := &Para{
+		Location: "101010100",
+		Lang:     lang.ZHCN,
+		Unit:     qweather.METRIC,
+	}
+
+	for i, f := range fs {
+		resp, err := f(para, key, true, &itest.NoProxyClient)
+		if err != nil {
+			t.Error(err)
+			continue
+		}
+		if resp.Code != "200" {
+			t.Error("return code is not 200", resp, i)
 		}
 	}
 }

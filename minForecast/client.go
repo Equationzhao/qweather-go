@@ -1,3 +1,4 @@
+// Package minForecast 分钟预报
 package minForecast
 
 import (

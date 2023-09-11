@@ -1,3 +1,4 @@
+// Package lang 语言代码
 package lang
 
 const (

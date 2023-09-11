@@ -1,3 +1,4 @@
+// Package geo 和风天气GeoAPI
 package geo
 
 import (
