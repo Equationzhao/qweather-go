@@ -4,7 +4,6 @@ import (
 	"io"
 	"net/http"
 	"testing"
-	"time"
 
 	"github.com/Equationzhao/qweather-go"
 	"github.com/Equationzhao/qweather-go/internal/json"
@@ -35,7 +34,7 @@ func helper(t *testing.T, request *http.Request, m any) {
 
 func TestRealTime(t *testing.T) {
 	para := &Para{
-		Location: "101010100",
+		Location: "116.41,39.92",
 		Lang:     lang.ZHCN,
 		Unit:     qweather.METRIC,
 	}
@@ -47,13 +46,20 @@ func TestRealTime(t *testing.T) {
 	if resp.Code != "200" {
 		t.Fatal("return code is not 200")
 	}
-	key.Encrypt = false
+
+	resp, err = RealTime(para, key, true, nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Log(resp)
+	if resp.Code != "200" {
+		t.Fatal("return code is not 200")
+	}
 
 	request, err := RealTimeRequest(para, key, true)
 	if err != nil {
 		t.Fatal(err)
 	}
-	key.Encrypt = true
 
 	helper(t, request, &RealTimeResponse{})
 }
@@ -64,7 +70,6 @@ func TestHourly(t *testing.T) {
 		Lang:     lang.ZHCN,
 		Unit:     qweather.METRIC,
 	}
-	t.Log(key.Key, key.PublicID)
 
 	// 24
 	args := []uint8{24}
@@ -84,6 +89,40 @@ func TestHourly(t *testing.T) {
 		t.Fatal(err)
 	}
 	helper(t, request, &HourlyResponse{})
+}
+
+func TestHour24(t *testing.T) {
+	para := &Para{
+		Location: "101010100",
+		Lang:     lang.ZHCN,
+		Unit:     qweather.METRIC,
+	}
+	resp, err := Hour24(para, key, true, &itest.NoProxyClient)
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Log(resp)
+	if resp.Code != "200" {
+		t.Fatal("return code is not 200")
+	}
+}
+
+func TestUnsetEncrypt(t *testing.T) {
+	_key := key
+	_key.UnsetEncrypt()
+	para := &Para{
+		Location: "101010100",
+		Lang:     lang.ZHCN,
+		Unit:     qweather.METRIC,
+	}
+	resp, err := Hour24(para, _key, true, &itest.NoProxyClient)
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Log(resp)
+	if resp.Code != "200" {
+		t.Fatal("return code is not 200")
+	}
 }
 
 func TestDaily(t *testing.T) {
@@ -113,11 +152,41 @@ func TestDaily(t *testing.T) {
 	helper(t, request, &DailyResponse{})
 }
 
-func TestWithClientRequest(t *testing.T) {
-	// proxy http://localhost:1087
-	client := itest.HttpProxyClient(1087)
-	client.Timeout = 10 * time.Second
+func TestDay3(t *testing.T) {
+	para := &Para{
+		Location: "101010100",
+		Lang:     lang.ZHCN,
+		Unit:     qweather.METRIC,
+	}
 
+	resp, err := Day3(para, key, true, &itest.NoProxyClient)
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Log(resp)
+	if resp.Code != "200" {
+		t.Fatal("return code is not 200")
+	}
+}
+
+func TestDay7(t *testing.T) {
+	para := &Para{
+		Location: "101010100",
+		Lang:     lang.ZHCN,
+		Unit:     qweather.METRIC,
+	}
+
+	resp, err := Day7(para, key, true, &itest.NoProxyClient)
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Log(resp)
+	if resp.Code != "200" {
+		t.Fatal("return code is not 200")
+	}
+}
+
+func TestWithClientRequest(t *testing.T) {
 	para := &Para{
 		Location: "101010100",
 		Lang:     lang.ZHCN,
@@ -132,7 +201,7 @@ func TestWithClientRequest(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		resp, err := util.Get(req, &client)
+		resp, err := util.Get(req, &itest.NoProxyClient)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -141,10 +210,6 @@ func TestWithClientRequest(t *testing.T) {
 }
 
 func TestWithClient(t *testing.T) {
-	// proxy http://localhost:1087
-	client := itest.HttpProxyClient(1087)
-	client.Timeout = 10 * time.Second
-
 	para := &Para{
 		Location: "101010100",
 		Lang:     lang.ZHCN,
@@ -154,7 +219,7 @@ func TestWithClient(t *testing.T) {
 	// 3,7
 	args := []uint8{3, 7}
 	for _, arg := range args {
-		resp, err := Daily(para, key, arg, true, &client)
+		resp, err := Daily(para, key, arg, true, &itest.NoProxyClient)
 		if err != nil {
 			t.Error(err)
 			continue
@@ -166,7 +231,7 @@ func TestWithClient(t *testing.T) {
 }
 
 func TestDays(t *testing.T) {
-	fs := [...]func(para *Para, key qweather.Credential, isFreePlan bool, client qweather.Client) (*DailyResponse, error){
+	fs := []func(para *Para, key qweather.Credential, isFreePlan bool, client qweather.Client) (*DailyResponse, error){
 		Day3,
 		Day7,
 		Day10,

@@ -66,6 +66,15 @@ func TestCityList(t *testing.T) {
 		t.Fatal("return code is not 200")
 	}
 
+	response, err = CityList(para, key, true, nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Log(response)
+	if response.Code != "200" {
+		t.Fatal("return code is not 200")
+	}
+
 	request, err := CityListRequest(para, key, true)
 	t.Log(request.URL)
 

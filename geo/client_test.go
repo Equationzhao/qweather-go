@@ -18,13 +18,42 @@ func TestGet(t *testing.T) {
 		Number:   20,
 		Range:    "cn",
 	}
-	resp, err := SearchCity(para, key, &itest.NoProxyClient)
-	if err != nil {
-		t.Fatal(err)
+	{
+		resp, err := SearchCity(para, key, &itest.NoProxyClient)
+		if err != nil {
+			t.Fatal(err)
+		}
+		t.Log(resp)
+		if resp.Code != "200" {
+			t.Error("return code is not 200")
+		}
 	}
-	t.Log(resp)
-	if resp.Code != "200" {
-		t.Error("return code is not 200")
+	{
+		resp, err := SearchCityWithRequiredParam("深圳", key, para, &itest.NoProxyClient)
+		if err != nil {
+			t.Fatal(err)
+		}
+		t.Log(resp)
+		if resp.Code != "200" {
+			t.Error("return code is not 200")
+		}
+	}
+	{
+		resp, err := SearchCityWithRequiredParam("深圳", key, nil, &itest.NoProxyClient)
+		if err != nil {
+			t.Fatal(err)
+		}
+		t.Log(resp)
+		if resp.Code != "200" {
+			t.Error("return code is not 200")
+		}
+	}
+	{
+		srwp, _ := SearchCityRequestWithRequiredParam("深圳", key, nil)
+		_, err := itest.NoProxyClient.Do(srwp)
+		if err != nil {
+			t.Error(err)
+		}
 	}
 }
 
