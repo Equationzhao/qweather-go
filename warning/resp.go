@@ -1,10 +1,12 @@
 package warning
 
+import "github.com/Equationzhao/qweather-go/statusCode"
+
 type RealTimeResponse struct {
-	Code       string     `json:"code"`       // 状态码
-	UpdateTime string     `json:"updateTime"` // 当前API的最近更新时间 https://dev.qweather.com/docs/resource/glossary/#update-time
-	FxLink     string     `json:"fxLink"`     // 当前数据的响应式页面，便于嵌入网站或应用
-	Warning    []struct { // 注意：如果查询的地区当前没有灾害预警信息，返回的warning字段为空。
+	Code       statusCode.Code `json:"code"`       // 状态码
+	UpdateTime string          `json:"updateTime"` // 当前API的最近更新时间 https://dev.qweather.com/docs/resource/glossary/#update-time
+	FxLink     string          `json:"fxLink"`     // 当前数据的响应式页面，便于嵌入网站或应用
+	Warning    []struct {      // 注意：如果查询的地区当前没有灾害预警信息，返回的warning字段为空。
 		Id        string `json:"id"`        // 本条预警的唯一标识，可判断本条预警是否已经存在
 		Sender    string `json:"sender"`    // 预警发布单位，**可能为空**
 		PubTime   string `json:"pubTime"`   // 预警发布时间
@@ -29,41 +31,13 @@ type RealTimeResponse struct {
 }
 
 type CityListResponse struct {
-	Code           string `json:"code"`       // 状态码
-	UpdateTime     string `json:"updateTime"` // 当前API的最近更新时间 https://dev.qweather.com/docs/resource/glossary/#update-time
+	Code           statusCode.Code `json:"code"`       // 状态码
+	UpdateTime     string          `json:"updateTime"` // 当前API的最近更新时间 https://dev.qweather.com/docs/resource/glossary/#update-time
 	WarningLocList []struct {
 		LocationId string `json:"locationId"` // 当前国家预警的LocationID
 	} `json:"warningLocList"`
 	Refer struct {
 		Sources []string `json:"sources"` // 原始数据来源，**可能为空**
 		License []string `json:"license"` // 数据许可或版权声明，**可能为空**
-	} `json:"refer"`
-}
-
-type T struct {
-	Code       string `json:"code"`
-	UpdateTime string `json:"updateTime"`
-	FxLink     string `json:"fxLink"`
-	Warning    []struct {
-		Id            string `json:"id"`
-		Sender        string `json:"sender"`
-		PubTime       string `json:"pubTime"`
-		Title         string `json:"title"`
-		StartTime     string `json:"startTime"`
-		EndTime       string `json:"endTime"`
-		Status        string `json:"status"`
-		Level         string `json:"level"`
-		Severity      string `json:"severity"`
-		SeverityColor string `json:"severityColor"`
-		Type          string `json:"type"`
-		TypeName      string `json:"typeName"`
-		Urgency       string `json:"urgency"`
-		Certainty     string `json:"certainty"`
-		Text          string `json:"text"`
-		Related       string `json:"related"`
-	} `json:"warning"`
-	Refer struct {
-		Sources []string `json:"sources"`
-		License []string `json:"license"`
 	} `json:"refer"`
 }

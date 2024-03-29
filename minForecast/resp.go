@@ -1,10 +1,12 @@
 package minForecast
 
+import "github.com/Equationzhao/qweather-go/statusCode"
+
 type MinPrecipitationResponse struct {
-	Code       string `json:"code"`       // 状态码
-	UpdateTime string `json:"updateTime"` // 当前API的最近更新时间 https://dev.qweather.com/docs/resource/glossary/#update-time
-	FxLink     string `json:"fxLink"`     // 当前数据的响应式页面，便于嵌入网站或应用
-	Summary    string `json:"summary"`    // 分钟降水描述
+	Code       statusCode.Code `json:"code"`       // 状态码
+	UpdateTime string          `json:"updateTime"` // 当前API的最近更新时间 https://dev.qweather.com/docs/resource/glossary/#update-time
+	FxLink     string          `json:"fxLink"`     // 当前数据的响应式页面，便于嵌入网站或应用
+	Summary    string          `json:"summary"`    // 分钟降水描述
 	Minutely   []struct {
 		FxTime string `json:"fxTime"` // 预报时间
 		Precip string `json:"precip"` // 5分钟累计降水量，单位毫米

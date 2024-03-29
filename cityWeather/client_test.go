@@ -18,16 +18,16 @@ func helper(t *testing.T, request *http.Request, m any) {
 	t.Helper()
 	response, err := itest.NoProxyClient.Do(request)
 	if err != nil {
-		t.Fatal(err)
+		t.Error(err)
 	}
 	defer response.Body.Close()
 	all, err := io.ReadAll(response.Body)
 	if err != nil {
-		t.Fatal(err)
+		t.Error(err)
 	}
 	err = json.Unmarshal(all, m)
 	if err != nil {
-		t.Fatal(err)
+		t.Error(err)
 	}
 	t.Log(m)
 }
@@ -40,25 +40,25 @@ func TestRealTime(t *testing.T) {
 	}
 	resp, err := RealTime(para, key, true, &itest.NoProxyClient)
 	if err != nil {
-		t.Fatal(err)
+		t.Error(err)
 	}
 	t.Log(resp)
 	if resp.Code != "200" {
-		t.Fatal("return code is not 200")
+		t.Error("return code is not 200")
 	}
 
 	resp, err = RealTime(para, key, true, nil)
 	if err != nil {
-		t.Fatal(err)
+		t.Error(err)
 	}
 	t.Log(resp)
-	if resp.Code != "200" {
-		t.Fatal("return code is not 200")
+	if !resp.Code.IsSuccess() {
+		t.Error("return code is not 200")
 	}
 
 	request, err := RealTimeRequest(para, key, true)
 	if err != nil {
-		t.Fatal(err)
+		t.Error(err)
 	}
 
 	helper(t, request, &RealTimeResponse{})
@@ -76,17 +76,17 @@ func TestHourly(t *testing.T) {
 	for _, arg := range args {
 		resp, err := Hourly(para, key, arg, true, &itest.NoProxyClient)
 		if err != nil {
-			t.Fatal(err)
+			t.Error(err)
 		}
 		t.Log(resp)
-		if resp.Code != "200" {
-			t.Fatal("return code is not 200")
+		if !resp.Code.IsSuccess() {
+			t.Error("return code is not 200")
 		}
 	}
 
 	request, err := HourlyRequest(para, key, 24, true)
 	if err != nil {
-		t.Fatal(err)
+		t.Error(err)
 	}
 	helper(t, request, &HourlyResponse{})
 }
@@ -99,11 +99,11 @@ func TestHour24(t *testing.T) {
 	}
 	resp, err := Hour24(para, key, true, &itest.NoProxyClient)
 	if err != nil {
-		t.Fatal(err)
+		t.Error(err)
 	}
 	t.Log(resp)
 	if resp.Code != "200" {
-		t.Fatal("return code is not 200")
+		t.Error("return code is not 200")
 	}
 }
 
@@ -117,11 +117,11 @@ func TestUnsetEncrypt(t *testing.T) {
 	}
 	resp, err := Hour24(para, _key, true, &itest.NoProxyClient)
 	if err != nil {
-		t.Fatal(err)
+		t.Error(err)
 	}
 	t.Log(resp)
 	if resp.Code != "200" {
-		t.Fatal("return code is not 200")
+		t.Error("return code is not 200")
 	}
 }
 
@@ -137,17 +137,17 @@ func TestDaily(t *testing.T) {
 	for _, arg := range args {
 		resp, err := Daily(para, key, arg, true, &itest.NoProxyClient)
 		if err != nil {
-			t.Fatal(err)
+			t.Error(err)
 		}
 		t.Log(resp)
 		if resp.Code != "200" {
-			t.Fatal("return code is not 200")
+			t.Error("return code is not 200")
 		}
 	}
 
 	request, err := DailyRequest(para, key, 3, true)
 	if err != nil {
-		t.Fatal(err)
+		t.Error(err)
 	}
 	helper(t, request, &DailyResponse{})
 }
@@ -161,11 +161,11 @@ func TestDay3(t *testing.T) {
 
 	resp, err := Day3(para, key, true, &itest.NoProxyClient)
 	if err != nil {
-		t.Fatal(err)
+		t.Error(err)
 	}
 	t.Log(resp)
 	if resp.Code != "200" {
-		t.Fatal("return code is not 200")
+		t.Error("return code is not 200")
 	}
 }
 
@@ -178,11 +178,11 @@ func TestDay7(t *testing.T) {
 
 	resp, err := Day7(para, key, true, &itest.NoProxyClient)
 	if err != nil {
-		t.Fatal(err)
+		t.Error(err)
 	}
 	t.Log(resp)
 	if resp.Code != "200" {
-		t.Fatal("return code is not 200")
+		t.Error("return code is not 200")
 	}
 }
 
@@ -198,12 +198,12 @@ func TestWithClientRequest(t *testing.T) {
 	for _, arg := range args {
 		req, err := DailyRequest(para, key, arg, true)
 		if err != nil {
-			t.Fatal(err)
+			t.Error(err)
 		}
 
 		resp, err := util.Get(req, &itest.NoProxyClient)
 		if err != nil {
-			t.Fatal(err)
+			t.Error(err)
 		}
 		t.Log(string(resp))
 	}

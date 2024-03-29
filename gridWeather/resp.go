@@ -1,9 +1,11 @@
 package gridWeather
 
+import "github.com/Equationzhao/qweather-go/statusCode"
+
 type RealTimeResponse struct {
-	Code       string `json:"code"`       // 状态码
-	UpdateTime string `json:"updateTime"` // 当前API的最近更新时间 https://dev.qweather.com/docs/resource/glossary/#update-time
-	FxLink     string `json:"fxLink"`     // 当前数据的响应式页面，便于嵌入网站或应用
+	Code       statusCode.Code `json:"code"`       // 状态码
+	UpdateTime string          `json:"updateTime"` // 当前API的最近更新时间 https://dev.qweather.com/docs/resource/glossary/#update-time
+	FxLink     string          `json:"fxLink"`     // 当前数据的响应式页面，便于嵌入网站或应用
 	Now        struct {
 		ObsTime   string `json:"obsTime"`   // 数据观测时间
 		Temp      string `json:"temp"`      // 温度 默认单位：摄氏度
@@ -26,9 +28,9 @@ type RealTimeResponse struct {
 }
 
 type DailyResponse struct {
-	Code       string `json:"code"`       // 状态码
-	UpdateTime string `json:"updateTime"` // 当前API的最近更新时间 https://dev.qweather.com/docs/resource/glossary/#update-time
-	FxLink     string `json:"fxLink"`     // 当前数据的响应式页面，便于嵌入网站或应用
+	Code       statusCode.Code `json:"code"`       // 状态码
+	UpdateTime string          `json:"updateTime"` // 当前API的最近更新时间 https://dev.qweather.com/docs/resource/glossary/#update-time
+	FxLink     string          `json:"fxLink"`     // 当前数据的响应式页面，便于嵌入网站或应用
 	Daily      []struct {
 		FxDate         string `json:"fxDate"`         // 预报日期
 		TempMax        string `json:"tempMax"`        // 预报当天最高温度
@@ -56,9 +58,9 @@ type DailyResponse struct {
 }
 
 type HourlyResponse struct {
-	Code       string `json:"code"`       // 状态码
-	UpdateTime string `json:"updateTime"` // 当前API的最近更新时间 https://dev.qweather.com/docs/resource/glossary/#update-time
-	FxLink     string `json:"fxLink"`     // 当前数据的响应式页面，便于嵌入网站或应用
+	Code       statusCode.Code `json:"code"`       // 状态码
+	UpdateTime string          `json:"updateTime"` // 当前API的最近更新时间 https://dev.qweather.com/docs/resource/glossary/#update-time
+	FxLink     string          `json:"fxLink"`     // 当前数据的响应式页面，便于嵌入网站或应用
 	Hourly     []struct {
 		FxTime    string `json:"fxTime"`    // 预报时间
 		Temp      string `json:"temp"`      // 温度 默认单位：摄氏度

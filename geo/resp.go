@@ -1,7 +1,9 @@
 package geo
 
+import "github.com/Equationzhao/qweather-go/statusCode"
+
 type SearchResponse struct {
-	Code     string `json:"code"` // 状态码
+	Code     statusCode.Code `json:"code"` // 状态码
 	Location []struct {
 		Name      string `json:"name"`      // 地区/城市名称
 		Id        string `json:"id"`        // 地区/城市ID
@@ -24,7 +26,7 @@ type SearchResponse struct {
 }
 
 type HitResponse struct {
-	Code        string `json:"code"` // 状态码
+	Code        statusCode.Code `json:"code"` // 状态码
 	TopCityList []struct {
 		Name      string `json:"name"`      // 地区/城市名称
 		Id        string `json:"id"`        // 地区/城市ID
@@ -47,7 +49,7 @@ type HitResponse struct {
 }
 
 type POIResponse struct {
-	Code string `json:"code"` // 状态码
+	Code statusCode.Code `json:"code"` // 状态码
 	Poi  []struct {
 		Name      string `json:"name"`      // POI（兴趣点）名称
 		Id        string `json:"id"`        // POI（兴趣点）ID

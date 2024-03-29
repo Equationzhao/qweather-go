@@ -1,9 +1,11 @@
 package indices
 
+import "github.com/Equationzhao/qweather-go/statusCode"
+
 type Response struct {
-	Code       string `json:"code"`       // 状态码
-	UpdateTime string `json:"updateTime"` // 当前API的最近更新时间 https://dev.qweather.com/docs/api/indices/
-	FxLink     string `json:"fxLink"`     // 当前数据的响应式页面，便于嵌入网站或应用
+	Code       statusCode.Code `json:"code"`       // 状态码
+	UpdateTime string          `json:"updateTime"` // 当前API的最近更新时间 https://dev.qweather.com/docs/api/indices/
+	FxLink     string          `json:"fxLink"`     // 当前数据的响应式页面，便于嵌入网站或应用
 	Daily      []struct {
 		Date     string `json:"date"`     // 预报日期
 		Type     string `json:"type"`     // 生活指数类型ID
