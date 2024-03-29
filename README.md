@@ -40,11 +40,11 @@ func main() {
 	// 从环境变量中获取
 	key := *util.Credential("qweather_key", "qweather_public_id").SetEncrypt()
 
-	// 设置参数｜设置 credential｜设置是否为 free plan｜设置 client(nil 则使用 DefaultClient)
+	// 设置参数｜设置 credential｜设置订阅模式｜设置 client(nil 则使用 DefaultClient)
 	r, err := warning.RealTime(&warning.Para{
 		Range:    "cn",
 		Location: "101230204",
-	}, key, true, &http.Client{
+	}, key, qweather.Free, &http.Client{
 		Transport: &http.Transport{
 			Proxy: nil,
 		},
@@ -54,7 +54,7 @@ func main() {
 	    r, err := warning.RealTime(&warning.Para{
 			Range:    "cn",
 			Location: "101230204",
-		}, key, true, nil)
+		}, key, qweather.Free, nil)
 	 */
 
 	if err != nil {
@@ -89,9 +89,9 @@ key := *util.Credential("qweather_key", "qweather_public_id").SetEncrypt()
 例如:
 ```go
 // 原方法
-response, err := cityWeather.RealTime(para, key, true, nil)
-//  对应生产 Request 的方法如下
-request, err := cityWeather.RealTimeRequest(para, key, true)
+response, err := cityWeather.RealTime(para, key, qweather.Free, nil)
+// 对应生成 Request 的方法如下
+request, err := cityWeather.RealTimeRequest(para, key, qweather.Free)
 ```
 
 ## 默认参数
@@ -134,10 +134,11 @@ response, err := cityWeather.RealTime(para, key, true, client)
 
 可以通过 `statusCode.XXX` 来获取对应的状态码
 
-可以通过 `statusCode.Translate(statusCode.XXX)` 来获取对应的状态码含义
+可以通过 `statusCode.Translate(statusCode.XXX)` 或 `code.Translate()` 来获取对应的状态码含义
 
 ```go
 slog.Error("failed", "code", response.Code, "meaning", statusCode.Translate(response.Code))
+slog.Error("failed", "code", response.Code, "meaning", response.Code.Translate())
 ```
 
 ## 多语言
@@ -150,7 +151,7 @@ slog.Error("failed", "code", response.Code, "meaning", statusCode.Translate(resp
 para.Lang = lang.ZHCN
 ```
 
-## isFreePlan 参数
+## plan 参数
 
 参考 https://dev.qweather.com/docs/configuration/api-config/#了解api地址和参数
 
