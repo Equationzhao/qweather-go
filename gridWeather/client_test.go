@@ -37,7 +37,7 @@ func TestRealTime(t *testing.T) {
 		Lang:     "zh",
 		Unit:     qweather.METRIC,
 	}
-	response, err := RealTime(para, key, true, &itest.NoProxyClient)
+	response, err := RealTime(para, key, qweather.FreePlan, &itest.NoProxyClient)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -59,7 +59,7 @@ func TestHourly(t *testing.T) {
 		Lang:     "zh",
 		Unit:     qweather.METRIC,
 	}
-	response, err := Hourly(para, key, 24, true, &itest.NoProxyClient)
+	response, err := Hourly(para, key, 24, qweather.FreePlan, &itest.NoProxyClient)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -74,7 +74,7 @@ func TestHourly(t *testing.T) {
 	}
 	helper(t, request, &HourlyResponse{})
 
-	response, err = Hour24(para, key, true, &itest.NoProxyClient)
+	response, err = Hour24(para, key, qweather.FreePlan, &itest.NoProxyClient)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -90,7 +90,7 @@ func TestDaily(t *testing.T) {
 		Lang:     "zh",
 		Unit:     qweather.METRIC,
 	}
-	response, err := Daily(para, key, 3, true, &itest.NoProxyClient)
+	response, err := Daily(para, key, 3, qweather.FreePlan, &itest.NoProxyClient)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -105,7 +105,7 @@ func TestDaily(t *testing.T) {
 	}
 	helper(t, request, &DailyResponse{})
 
-	response, err = Day3(para, key, true, &itest.NoProxyClient)
+	response, err = Day3(para, key, qweather.FreePlan, &itest.NoProxyClient)
 	if err != nil {
 		t.Fatal(err)
 	}

@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"testing"
 
+	"github.com/Equationzhao/qweather-go"
 	"github.com/Equationzhao/qweather-go/internal/json"
 	itest "github.com/Equationzhao/qweather-go/internal/test"
 	"github.com/Equationzhao/qweather-go/lang"
@@ -36,7 +37,7 @@ func TestWarning(t *testing.T) {
 		Location: "116.41,39.92",
 		Lang:     lang.ZHCN,
 	}
-	response, err := RealTime(para, key, true, &itest.NoProxyClient)
+	response, err := RealTime(para, key, qweather.FreePlan, &itest.NoProxyClient)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -57,7 +58,7 @@ func TestCityList(t *testing.T) {
 	para := &Para{
 		Range: "cn",
 	}
-	response, err := CityList(para, key, true, &itest.NoProxyClient)
+	response, err := CityList(para, key, qweather.FreePlan, &itest.NoProxyClient)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -66,7 +67,7 @@ func TestCityList(t *testing.T) {
 		t.Fatal("return code is not 200")
 	}
 
-	response, err = CityList(para, key, true, nil)
+	response, err = CityList(para, key, qweather.FreePlan, nil)
 	if err != nil {
 		t.Fatal(err)
 	}

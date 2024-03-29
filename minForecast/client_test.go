@@ -3,6 +3,7 @@ package minForecast
 import (
 	"testing"
 
+	"github.com/Equationzhao/qweather-go"
 	"github.com/Equationzhao/qweather-go/util"
 )
 
@@ -13,7 +14,7 @@ func TestMinPrecipitation(t *testing.T) {
 		Location: "116.41,39.92",
 		Lang:     "zh",
 	}
-	resp, err := MinPrecipitation(para, key, true, nil)
+	resp, err := MinPrecipitation(para, key, qweather.FreePlan, nil)
 	if err != nil {
 		t.Fatal(err)
 	}

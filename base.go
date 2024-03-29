@@ -63,3 +63,8 @@ func (c *Credential) UnsetEncrypt() *Credential {
 	c.Encrypt = false
 	return c
 }
+
+const (
+	FreePlan = true
+	Standard = false
+)
