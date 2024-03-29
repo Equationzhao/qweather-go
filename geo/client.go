@@ -87,12 +87,9 @@ func SearchCity(para *Para, key qweather.Credential, client qweather.Client) (*S
 // 详见 SearchCity
 func SearchCityWithRequiredParam(location string, key qweather.Credential, para *Para, client qweather.Client) (*SearchResponse, error) {
 	if para == nil {
-		para = &Para{
-			Location: location,
-		}
-	} else {
-		para.Location = location
+		para = &Para{}
 	}
+	para.Location = location
 	return SearchCity(para, key, client)
 }
 

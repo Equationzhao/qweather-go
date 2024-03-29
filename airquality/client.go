@@ -13,35 +13,31 @@ import (
 
 	"github.com/Equationzhao/qweather-go"
 	"github.com/Equationzhao/qweather-go/internal/json"
-	iutil "github.com/Equationzhao/qweather-go/internal/util"
 	"github.com/Equationzhao/qweather-go/util"
 )
 
 const (
-	EndPoint     = "https://api.qweather.com/airquality/v1/"
-	FreeEndPoint = "https://devapi.qweather.com/airquality/v1/"
+	StandardEndPoint = "https://api.qweather.com/airquality/v1/"
+	FreeEndPoint     = "https://devapi.qweather.com/airquality/v1/"
 )
 
-func url(isFreePlan bool, u ...string) string {
-	if isFreePlan {
-		return iutil.Url(FreeEndPoint, u...)
-	}
-	return iutil.Url(EndPoint, u...)
-}
+var ProEndPoint *string = nil
 
-func urlNow(isFreePlan bool, u ...string) string {
+var url = util.UrlHelperBuilder(FreeEndPoint, StandardEndPoint, ProEndPoint)
+
+func urlNow(plan qweather.Version, u ...string) string {
 	us := []string{"now"}
-	return url(isFreePlan, append(us, u...)...)
+	return url(plan, append(us, u...)...)
 }
 
-func urlStation(isFreePlan bool, u ...string) string {
+func urlStation(plan qweather.Version, u ...string) string {
 	us := []string{"station"}
-	return url(isFreePlan, append(us, u...)...)
+	return url(plan, append(us, u...)...)
 }
 
-func NowRequest(para *NowPara, key qweather.Credential, isFreePlan bool) (*http.Request, error) {
+func NowRequest(para *NowPara, key qweather.Credential, plan qweather.Version) (*http.Request, error) {
 	r, err := util.Request(
-		urlNow(isFreePlan, para.LocationID), func(r *http.Request) {
+		urlNow(plan, para.LocationID), func(r *http.Request) {
 			q := nurl.Values{}
 			q.Add("lang", para.Lang)
 			if para.Pollutant {
@@ -64,8 +60,8 @@ func NowRequest(para *NowPara, key qweather.Credential, isFreePlan bool) (*http.
 	return r, nil
 }
 
-func Now(para *NowPara, key qweather.Credential, isFreePlan bool, client qweather.Client) (*NowAirQualityResponse, error) {
-	request, err := NowRequest(para, key, isFreePlan)
+func Now(para *NowPara, key qweather.Credential, plan qweather.Version, client qweather.Client) (*NowAirQualityResponse, error) {
+	request, err := NowRequest(para, key, plan)
 	if err != nil {
 		return nil, err
 	}
@@ -82,17 +78,21 @@ func Now(para *NowPara, key qweather.Credential, isFreePlan bool, client qweathe
 	return &res, nil
 }
 
-func NowWithRequiredParam(locationID string, key qweather.Credential, para *NowPara, isFreePlan bool, client qweather.Client) (*NowAirQualityResponse, error) {
+// RealTime
+// alias for Now
+var RealTime = Now
+
+func NowWithRequiredParam(locationID string, key qweather.Credential, para *NowPara, plan qweather.Version, client qweather.Client) (*NowAirQualityResponse, error) {
 	if para == nil {
 		para = &NowPara{}
 	}
 	para.LocationID = locationID
-	return Now(para, key, isFreePlan, client)
+	return Now(para, key, plan, client)
 }
 
-func StationRequest(para *StationPara, key qweather.Credential, isFreePlan bool) (*http.Request, error) {
+func StationRequest(para *StationPara, key qweather.Credential, plan qweather.Version) (*http.Request, error) {
 	r, err := util.Request(
-		urlStation(isFreePlan, para.LocationID), func(r *http.Request) {
+		urlStation(plan, para.LocationID), func(r *http.Request) {
 			q := nurl.Values{}
 			q.Add("lang", para.Lang)
 			if key.Encrypt {
@@ -109,8 +109,8 @@ func StationRequest(para *StationPara, key qweather.Credential, isFreePlan bool)
 	return r, nil
 }
 
-func Station(para *StationPara, key qweather.Credential, isFreePlan bool, client qweather.Client) (*NowAirQualityResponse, error) {
-	request, err := StationRequest(para, key, isFreePlan)
+func Station(para *StationPara, key qweather.Credential, plan qweather.Version, client qweather.Client) (*NowAirQualityResponse, error) {
+	request, err := StationRequest(para, key, plan)
 	if err != nil {
 		return nil, err
 	}
@@ -127,10 +127,10 @@ func Station(para *StationPara, key qweather.Credential, isFreePlan bool, client
 	return &res, nil
 }
 
-func StationWithRequiredParam(locationID string, key qweather.Credential, para *StationPara, isFreePlan bool, client qweather.Client) (*NowAirQualityResponse, error) {
+func StationWithRequiredParam(locationID string, key qweather.Credential, para *StationPara, plan qweather.Version, client qweather.Client) (*NowAirQualityResponse, error) {
 	if para == nil {
 		para = &StationPara{}
 	}
 	para.LocationID = locationID
-	return Station(para, key, isFreePlan, client)
+	return Station(para, key, plan, client)
 }

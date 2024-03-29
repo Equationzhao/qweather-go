@@ -37,7 +37,7 @@ func TestWarning(t *testing.T) {
 		Location: "116.41,39.92",
 		Lang:     lang.ZHCN,
 	}
-	response, err := RealTime(para, key, qweather.FreePlan, &itest.NoProxyClient)
+	response, err := RealTime(para, key, qweather.Free, &itest.NoProxyClient)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -46,7 +46,7 @@ func TestWarning(t *testing.T) {
 		t.Fatal("return code is not 200")
 	}
 
-	request, err := RealTimeRequest(para, key, true)
+	request, err := RealTimeRequest(para, key, qweather.Free)
 	t.Log(request.URL)
 	if err != nil {
 		t.Fatal(err)
@@ -58,7 +58,7 @@ func TestCityList(t *testing.T) {
 	para := &Para{
 		Range: "cn",
 	}
-	response, err := CityList(para, key, qweather.FreePlan, &itest.NoProxyClient)
+	response, err := CityList(para, key, qweather.Free, &itest.NoProxyClient)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -67,7 +67,7 @@ func TestCityList(t *testing.T) {
 		t.Fatal("return code is not 200")
 	}
 
-	response, err = CityList(para, key, qweather.FreePlan, nil)
+	response, err = CityList(para, key, qweather.Free, nil)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -76,7 +76,7 @@ func TestCityList(t *testing.T) {
 		t.Fatal("return code is not 200")
 	}
 
-	request, err := CityListRequest(para, key, true)
+	request, err := CityListRequest(para, key, qweather.Free)
 	t.Log(request.URL)
 
 	if err != nil {

@@ -7,7 +7,6 @@ import (
 
 	"github.com/Equationzhao/qweather-go"
 	"github.com/Equationzhao/qweather-go/internal/json"
-	iutil "github.com/Equationzhao/qweather-go/internal/util"
 	"github.com/Equationzhao/qweather-go/util"
 )
 
@@ -16,12 +15,9 @@ const (
 	FreeEndPoint = "https://devapi.qweather.com/v7/warning/"
 )
 
-func url(isFreePlan bool, u ...string) string {
-	if isFreePlan {
-		return iutil.Url(FreeEndPoint, u...)
-	}
-	return iutil.Url(EndPoint, u...)
-}
+var ProEndPoint *string = nil
+
+var url = util.UrlHelperBuilder(FreeEndPoint, EndPoint, ProEndPoint)
 
 // RealTime 实时灾害预警
 //
@@ -45,10 +41,10 @@ func url(isFreePlan bool, u ...string) string {
 //
 //	para 为请求参数
 //	key 为用户认证key
-//	isFreePlan 为是否是免费用户
+//	plan 为是否是免费用户
 //	client 为自定义的 Client, 若为nil, 则使用http.DefaultClient
-func RealTime(para *Para, key qweather.Credential, isFreePlan bool, client qweather.Client) (*RealTimeResponse, error) {
-	request, err := RealTimeRequest(para, key, isFreePlan)
+func RealTime(para *Para, key qweather.Credential, plan qweather.Version, client qweather.Client) (*RealTimeResponse, error) {
+	request, err := RealTimeRequest(para, key, plan)
 	if err != nil {
 		return nil, err
 	}
@@ -68,7 +64,7 @@ func RealTime(para *Para, key qweather.Credential, isFreePlan bool, client qweat
 // RealTimeWithRequiredParam 实时灾害预警
 // para 为其余参数，可以为 nil
 // 详见 RealTime
-func RealTimeWithRequiredParam(location string, para *Para, key qweather.Credential, isFreePlan bool, client qweather.Client) (*RealTimeResponse, error) {
+func RealTimeWithRequiredParam(location string, para *Para, key qweather.Credential, plan qweather.Version, client qweather.Client) (*RealTimeResponse, error) {
 	if para == nil {
 		para = &Para{
 			Location: location,
@@ -76,7 +72,7 @@ func RealTimeWithRequiredParam(location string, para *Para, key qweather.Credent
 	} else {
 		para.Location = location
 	}
-	return RealTime(para, key, isFreePlan, client)
+	return RealTime(para, key, plan, client)
 }
 
 // RealTimeRequest 实时灾害预警
@@ -96,9 +92,9 @@ func RealTimeWithRequiredParam(location string, para *Para, key qweather.Credent
 // lang
 //
 //	多语言设置，更多语言可选值参考语言代码(https://dev.qweather.com/docs/resource/language/)。当数据不匹配你设置的语言时，将返回英文或其本地语言结果。
-func RealTimeRequest(para *Para, key qweather.Credential, isFreePlan bool) (*http.Request, error) {
+func RealTimeRequest(para *Para, key qweather.Credential, plan qweather.Version) (*http.Request, error) {
 	r, err := util.Request(
-		url(isFreePlan, "now"), func(r *http.Request) {
+		url(plan, "now"), func(r *http.Request) {
 			q := nurl.Values{}
 			q.Add("location", para.Location)
 			q.Add("lang", para.Lang)
@@ -119,7 +115,7 @@ func RealTimeRequest(para *Para, key qweather.Credential, isFreePlan bool) (*htt
 // RealTimeRequestWithRequiredParam 实时灾害预警
 // para 为其余参数，可以为 nil
 // 详见 RealTimeRequest
-func RealTimeRequestWithRequiredParam(location string, para *Para, key qweather.Credential, isFreePlan bool) (*http.Request, error) {
+func RealTimeRequestWithRequiredParam(location string, para *Para, key qweather.Credential, plan qweather.Version) (*http.Request, error) {
 	if para == nil {
 		para = &Para{
 			Location: location,
@@ -127,7 +123,7 @@ func RealTimeRequestWithRequiredParam(location string, para *Para, key qweather.
 	} else {
 		para.Location = location
 	}
-	return RealTimeRequest(para, key, isFreePlan)
+	return RealTimeRequest(para, key, plan)
 }
 
 // CityList 天气预警城市列表
@@ -153,10 +149,10 @@ func RealTimeRequestWithRequiredParam(location string, para *Para, key qweather.
 //
 //	para 为请求参数
 //	key 为用户认证key
-//	isFreePlan 为是否是免费用户
+//	plan 为是否是免费用户
 //	client 为自定义的 Client, 若为nil, 则使用http.DefaultClient
-func CityList(para *Para, key qweather.Credential, isFreePlan bool, client qweather.Client) (*CityListResponse, error) {
-	request, err := CityListRequest(para, key, isFreePlan)
+func CityList(para *Para, key qweather.Credential, plan qweather.Version, client qweather.Client) (*CityListResponse, error) {
+	request, err := CityListRequest(para, key, plan)
 	if err != nil {
 		return nil, err
 	}
@@ -176,7 +172,7 @@ func CityList(para *Para, key qweather.Credential, isFreePlan bool, client qweat
 // CityListWithRequiredParam 天气预警城市列表
 // para 为其余参数，可以为 nil
 // 详见 CityList
-func CityListWithRequiredParam(Range string, para *Para, key qweather.Credential, isFreePlan bool, client qweather.Client) (*CityListResponse, error) {
+func CityListWithRequiredParam(Range string, para *Para, key qweather.Credential, plan qweather.Version, client qweather.Client) (*CityListResponse, error) {
 	if para == nil {
 		para = &Para{
 			Range: Range,
@@ -184,7 +180,7 @@ func CityListWithRequiredParam(Range string, para *Para, key qweather.Credential
 	} else {
 		para.Range = Range
 	}
-	return CityList(para, key, isFreePlan, client)
+	return CityList(para, key, plan, client)
 }
 
 // CityListRequest 天气预警城市列表
@@ -210,10 +206,10 @@ func CityListWithRequiredParam(Range string, para *Para, key qweather.Credential
 //
 //	para 为请求参数
 //	key 为用户认证key
-//	isFreePlan 为是否是免费用户
-func CityListRequest(para *Para, key qweather.Credential, isFreePlan bool) (*http.Request, error) {
+//	plan 为是否是免费用户
+func CityListRequest(para *Para, key qweather.Credential, plan qweather.Version) (*http.Request, error) {
 	r, err := util.Request(
-		url(isFreePlan, "list"), func(r *http.Request) {
+		url(plan, "list"), func(r *http.Request) {
 			q := nurl.Values{}
 			q.Add("range", para.Range)
 			if key.Encrypt {
@@ -233,7 +229,7 @@ func CityListRequest(para *Para, key qweather.Credential, isFreePlan bool) (*htt
 // CityListRequestWithRequiredParam 天气预警城市列表
 // para 为其余参数，可以为 nil
 // 详见 CityListRequest
-func CityListRequestWithRequiredParam(Range string, para *Para, key qweather.Credential, isFreePlan bool) (*http.Request, error) {
+func CityListRequestWithRequiredParam(Range string, para *Para, key qweather.Credential, plan qweather.Version) (*http.Request, error) {
 	if para == nil {
 		para = &Para{
 			Range: Range,
@@ -241,5 +237,5 @@ func CityListRequestWithRequiredParam(Range string, para *Para, key qweather.Cre
 	} else {
 		para.Range = Range
 	}
-	return CityListRequest(para, key, isFreePlan)
+	return CityListRequest(para, key, plan)
 }

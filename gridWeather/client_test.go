@@ -8,6 +8,7 @@ import (
 	"github.com/Equationzhao/qweather-go"
 	"github.com/Equationzhao/qweather-go/internal/json"
 	itest "github.com/Equationzhao/qweather-go/internal/test"
+	"github.com/Equationzhao/qweather-go/lang"
 	"github.com/Equationzhao/qweather-go/util"
 )
 
@@ -34,10 +35,10 @@ func helper(t *testing.T, request *http.Request, m any) {
 func TestRealTime(t *testing.T) {
 	para := &Para{
 		Location: "116.41,39.92",
-		Lang:     "zh",
+		Lang:     lang.ZHCN,
 		Unit:     qweather.METRIC,
 	}
-	response, err := RealTime(para, key, qweather.FreePlan, &itest.NoProxyClient)
+	response, err := RealTime(para, key, qweather.Free, &itest.NoProxyClient)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -46,7 +47,7 @@ func TestRealTime(t *testing.T) {
 		t.Fatal("return code is not 200")
 	}
 
-	request, err := RealTimeRequest(para, key, true)
+	request, err := RealTimeRequest(para, key, qweather.Free)
 	if err != nil {
 		return
 	}
@@ -56,10 +57,10 @@ func TestRealTime(t *testing.T) {
 func TestHourly(t *testing.T) {
 	para := &Para{
 		Location: "116.41,39.92",
-		Lang:     "zh",
+		Lang:     lang.ZHCN,
 		Unit:     qweather.METRIC,
 	}
-	response, err := Hourly(para, key, 24, qweather.FreePlan, &itest.NoProxyClient)
+	response, err := Hourly(para, key, 24, qweather.Free, &itest.NoProxyClient)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -68,13 +69,13 @@ func TestHourly(t *testing.T) {
 		t.Fatal("return code is not 200")
 	}
 
-	request, err := HourlyRequest(para, key, 24, true)
+	request, err := HourlyRequest(para, key, 24, qweather.Free)
 	if err != nil {
 		return
 	}
 	helper(t, request, &HourlyResponse{})
 
-	response, err = Hour24(para, key, qweather.FreePlan, &itest.NoProxyClient)
+	response, err = Hour24(para, key, qweather.Free, &itest.NoProxyClient)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -87,10 +88,10 @@ func TestHourly(t *testing.T) {
 func TestDaily(t *testing.T) {
 	para := &Para{
 		Location: "116.41,39.92",
-		Lang:     "zh",
+		Lang:     lang.ZHCN,
 		Unit:     qweather.METRIC,
 	}
-	response, err := Daily(para, key, 3, qweather.FreePlan, &itest.NoProxyClient)
+	response, err := Daily(para, key, 3, qweather.Free, &itest.NoProxyClient)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -99,13 +100,13 @@ func TestDaily(t *testing.T) {
 		t.Fatal("return code is not 200")
 	}
 
-	request, err := DailyRequest(para, key, 3, true)
+	request, err := DailyRequest(para, key, 3, qweather.Free)
 	if err != nil {
 		t.Fatal(err)
 	}
 	helper(t, request, &DailyResponse{})
 
-	response, err = Day3(para, key, qweather.FreePlan, &itest.NoProxyClient)
+	response, err = Day3(para, key, qweather.Free, &itest.NoProxyClient)
 	if err != nil {
 		t.Fatal(err)
 	}

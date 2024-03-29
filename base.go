@@ -64,7 +64,11 @@ func (c *Credential) UnsetEncrypt() *Credential {
 	return c
 }
 
+type Version uint8
+
 const (
-	FreePlan = true
-	Standard = false
+	_ Version = iota
+	Free
+	Standard
+	Pro
 )

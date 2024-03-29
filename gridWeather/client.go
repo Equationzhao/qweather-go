@@ -8,7 +8,6 @@ import (
 
 	"github.com/Equationzhao/qweather-go"
 	"github.com/Equationzhao/qweather-go/internal/json"
-	iutil "github.com/Equationzhao/qweather-go/internal/util"
 	"github.com/Equationzhao/qweather-go/util"
 )
 
@@ -17,12 +16,9 @@ const (
 	FreeEndPoint = "https://devapi.qweather.com/v7/grid-weather/"
 )
 
-func url(isFreePlan bool, u ...string) string {
-	if isFreePlan {
-		return iutil.Url(FreeEndPoint, u...)
-	}
-	return iutil.Url(EndPoint, u...)
-}
+var ProEndPoint *string = nil
+
+var url = util.UrlHelperBuilder(FreeEndPoint, EndPoint, ProEndPoint)
 
 // RealTime 格点实时天气
 //
@@ -50,9 +46,9 @@ func url(isFreePlan bool, u ...string) string {
 //
 //	para 为请求参数
 //	key 为用户认证key
-//	isFreePlan 为是否为免费用户, 若是，则将上述API Host更改为devapi.qweather.com。参考免费订阅可用的数据(https://dev.qweather.com/docs/finance/subscription/#comparison)。
-func RealTime(para *Para, key qweather.Credential, isFreePlan bool, client qweather.Client) (*RealTimeResponse, error) {
-	request, err := RealTimeRequest(para, key, isFreePlan)
+//	plan 订阅模式, 若是免费订阅, 则将上述API Host更改为devapi.qweather.com。参考免费订阅可用的数据(https://dev.qweather.com/docs/finance/subscription/#comparison)。
+func RealTime(para *Para, key qweather.Credential, plan qweather.Version, client qweather.Client) (*RealTimeResponse, error) {
+	request, err := RealTimeRequest(para, key, plan)
 	if err != nil {
 		return nil, err
 	}
@@ -72,7 +68,7 @@ func RealTime(para *Para, key qweather.Credential, isFreePlan bool, client qweat
 // RealTimeWithRequiredParam 格点实时天气
 // para 为其余参数，可以为 nil
 // 详见 RealTime
-func RealTimeWithRequiredParam(location string, para *Para, key qweather.Credential, isFreePlan bool, client qweather.Client) (*RealTimeResponse, error) {
+func RealTimeWithRequiredParam(location string, para *Para, key qweather.Credential, plan qweather.Version, client qweather.Client) (*RealTimeResponse, error) {
 	if para == nil {
 		para = &Para{
 			Location: location,
@@ -80,7 +76,7 @@ func RealTimeWithRequiredParam(location string, para *Para, key qweather.Credent
 	} else {
 		para.Location = location
 	}
-	return RealTime(para, key, isFreePlan, client)
+	return RealTime(para, key, plan, client)
 }
 
 // RealTimeRequest 格点实时天气
@@ -109,9 +105,9 @@ func RealTimeWithRequiredParam(location string, para *Para, key qweather.Credent
 //
 //	para 为请求参数
 //	key 为用户认证key
-//	isFreePlan 为是否为免费用户, 若是，则将上述API Host更改为devapi.qweather.com。参考免费订阅可用的数据(https://dev.qweather.com/docs/finance/subscription/#comparison)。
-func RealTimeRequest(para *Para, key qweather.Credential, isFreePlan bool) (*http.Request, error) {
-	r, err := util.Request(url(isFreePlan, "now"), func(req *http.Request) {
+//	plan 订阅模式, 若是免费订阅, 则将上述API Host更改为devapi.qweather.com。参考免费订阅可用的数据(https://dev.qweather.com/docs/finance/subscription/#comparison)。
+func RealTimeRequest(para *Para, key qweather.Credential, plan qweather.Version) (*http.Request, error) {
+	r, err := util.Request(url(plan, "now"), func(req *http.Request) {
 		q := nurl.Values{}
 		q.Add("location", para.Location)
 		q.Add("lang", para.Lang)
@@ -132,7 +128,7 @@ func RealTimeRequest(para *Para, key qweather.Credential, isFreePlan bool) (*htt
 // RealTimeRequestWithRequiredParam 格点实时天气
 // para 为其余参数，可以为 nil
 // 详见 RealTimeRequest
-func RealTimeRequestWithRequiredParam(location string, para *Para, key qweather.Credential, isFreePlan bool) (*http.Request, error) {
+func RealTimeRequestWithRequiredParam(location string, para *Para, key qweather.Credential, plan qweather.Version) (*http.Request, error) {
 	if para == nil {
 		para = &Para{
 			Location: location,
@@ -140,7 +136,7 @@ func RealTimeRequestWithRequiredParam(location string, para *Para, key qweather.
 	} else {
 		para.Location = location
 	}
-	return RealTimeRequest(para, key, isFreePlan)
+	return RealTimeRequest(para, key, plan)
 }
 
 // Now
@@ -180,10 +176,10 @@ var Now = RealTime
 //	para 为请求参数
 //	key 为用户认证key
 //	count 为天数
-//	isFreePlan 为是否为免费用户, 若是，则将上述API Host更改为devapi.qweather.com。参考免费订阅可用的数据(https://dev.qweather.com/docs/finance/subscription/#comparison)。
+//	plan 订阅模式, 若是免费订阅, 则将上述API Host更改为devapi.qweather.com。参考免费订阅可用的数据(https://dev.qweather.com/docs/finance/subscription/#comparison)。
 //	client 为自定义的 Client, 若为nil, 则使用 http.DefaultClient
-func Daily(para *Para, key qweather.Credential, count uint8, isFreePlan bool, client qweather.Client) (*DailyResponse, error) {
-	req, err := DailyRequest(para, key, count, isFreePlan)
+func Daily(para *Para, key qweather.Credential, count uint8, plan qweather.Version, client qweather.Client) (*DailyResponse, error) {
+	req, err := DailyRequest(para, key, count, plan)
 	if err != nil {
 		return nil, err
 	}
@@ -202,20 +198,20 @@ func Daily(para *Para, key qweather.Credential, count uint8, isFreePlan bool, cl
 
 // Day3 三日天气预报
 // client 为自定义的 Client, 若为nil, 则使用 http.DefaultClient
-func Day3(para *Para, key qweather.Credential, isFreePlan bool, client qweather.Client) (*DailyResponse, error) {
-	return Daily(para, key, 3, isFreePlan, client)
+func Day3(para *Para, key qweather.Credential, plan qweather.Version, client qweather.Client) (*DailyResponse, error) {
+	return Daily(para, key, 3, plan, client)
 }
 
 // Day7 七日天气预报
 // client 为自定义的 Client, 若为nil, 则使用 http.DefaultClient
-func Day7(para *Para, key qweather.Credential, isFreePlan bool, client qweather.Client) (*DailyResponse, error) {
-	return Daily(para, key, 7, isFreePlan, client)
+func Day7(para *Para, key qweather.Credential, plan qweather.Version, client qweather.Client) (*DailyResponse, error) {
+	return Daily(para, key, 7, plan, client)
 }
 
 // DailyWithRequiredParam 每日天气预报
 // para 为其余参数，可以为 nil
 // 详见 Daily
-func DailyWithRequiredParam(location string, key qweather.Credential, count uint8, para *Para, isFreePlan bool, client qweather.Client) (*DailyResponse, error) {
+func DailyWithRequiredParam(location string, key qweather.Credential, count uint8, para *Para, plan qweather.Version, client qweather.Client) (*DailyResponse, error) {
 	if para == nil {
 		para = &Para{
 			Location: location,
@@ -223,7 +219,7 @@ func DailyWithRequiredParam(location string, key qweather.Credential, count uint
 	} else {
 		para.Location = location
 	}
-	return Daily(para, key, count, isFreePlan, client)
+	return Daily(para, key, count, plan, client)
 }
 
 // DailyRequest 每日天气预报
@@ -259,10 +255,10 @@ func DailyWithRequiredParam(location string, key qweather.Credential, count uint
 //	para 为请求参数
 //	key 为用户认证key
 //	count 为天数
-//	isFreePlan 为是否为免费用户, 若是，则将上述API Host更改为devapi.qweather.com。参考免费订阅可用的数据(https://dev.qweather.com/docs/finance/subscription/#comparison)。
-func DailyRequest(para *Para, key qweather.Credential, count uint8, isFreePlan bool) (*http.Request, error) {
+//	plan 订阅模式, 若是免费订阅, 则将上述API Host更改为devapi.qweather.com。参考免费订阅可用的数据(https://dev.qweather.com/docs/finance/subscription/#comparison)。
+func DailyRequest(para *Para, key qweather.Credential, count uint8, plan qweather.Version) (*http.Request, error) {
 	r, err := util.Request(
-		url(isFreePlan, strconv.Itoa(int(count))+"d"), func(r *http.Request) {
+		url(plan, strconv.Itoa(int(count))+"d"), func(r *http.Request) {
 			q := r.URL.Query()
 			q.Add("location", para.Location)
 			q.Add("lang", para.Lang)
@@ -284,7 +280,7 @@ func DailyRequest(para *Para, key qweather.Credential, count uint8, isFreePlan b
 // DailyRequestWithRequiredParam 每日天气预报
 // para 为其余参数，可以为 nil
 // 详见 DailyRequest
-func DailyRequestWithRequiredParam(location string, key qweather.Credential, count uint8, para *Para, isFreePlan bool) (*http.Request, error) {
+func DailyRequestWithRequiredParam(location string, key qweather.Credential, count uint8, para *Para, plan qweather.Version) (*http.Request, error) {
 	if para == nil {
 		para = &Para{
 			Location: location,
@@ -292,7 +288,7 @@ func DailyRequestWithRequiredParam(location string, key qweather.Credential, cou
 	} else {
 		para.Location = location
 	}
-	return DailyRequest(para, key, count, isFreePlan)
+	return DailyRequest(para, key, count, plan)
 }
 
 // Hourly 逐小时天气预报
@@ -328,10 +324,10 @@ func DailyRequestWithRequiredParam(location string, key qweather.Credential, cou
 //	para 为请求参数
 //	key 为用户认证key
 //	count 为小时数
-//	isFreePlan 为是否为免费用户, 若是，则将上述API Host更改为devapi.qweather.com。参考免费订阅可用的数据(https://dev.qweather.com/docs/finance/subscription/#comparison)。
+//	plan 订阅模式, 若是免费订阅, 则将上述API Host更改为devapi.qweather.com。参考免费订阅可用的数据(https://dev.qweather.com/docs/finance/subscription/#comparison)。
 //	client 为自定义的 Client, 若为nil, 则使用http.DefaultClient
-func Hourly(para *Para, key qweather.Credential, count uint8, isFreePlan bool, client qweather.Client) (*HourlyResponse, error) {
-	req, err := HourlyRequest(para, key, count, isFreePlan)
+func Hourly(para *Para, key qweather.Credential, count uint8, plan qweather.Version, client qweather.Client) (*HourlyResponse, error) {
+	req, err := HourlyRequest(para, key, count, plan)
 	if err != nil {
 		return nil, err
 	}
@@ -350,20 +346,20 @@ func Hourly(para *Para, key qweather.Credential, count uint8, isFreePlan bool, c
 }
 
 // Hour24 24小时天气预报
-func Hour24(para *Para, key qweather.Credential, isFreePlan bool, client qweather.Client) (*HourlyResponse, error) {
-	return Hourly(para, key, 24, isFreePlan, client)
+func Hour24(para *Para, key qweather.Credential, plan qweather.Version, client qweather.Client) (*HourlyResponse, error) {
+	return Hourly(para, key, 24, plan, client)
 }
 
 // Hour72 72小时天气预报
 // Paid plan only 付费订阅用户可用
-func Hour72(para *Para, key qweather.Credential, isFreePlan bool, client qweather.Client) (*HourlyResponse, error) {
-	return Hourly(para, key, 72, isFreePlan, client)
+func Hour72(para *Para, key qweather.Credential, plan qweather.Version, client qweather.Client) (*HourlyResponse, error) {
+	return Hourly(para, key, 72, plan, client)
 }
 
 // HourlyWithRequiredParam 逐小时天气预报
 // para 为其余参数，可以为 nil
 // 详见 Hourly
-func HourlyWithRequiredParam(location string, key qweather.Credential, count uint8, para *Para, isFreePlan bool, client qweather.Client) (*HourlyResponse, error) {
+func HourlyWithRequiredParam(location string, key qweather.Credential, count uint8, para *Para, plan qweather.Version, client qweather.Client) (*HourlyResponse, error) {
 	if para == nil {
 		para = &Para{
 			Location: location,
@@ -371,7 +367,7 @@ func HourlyWithRequiredParam(location string, key qweather.Credential, count uin
 	} else {
 		para.Location = location
 	}
-	return Hourly(para, key, count, isFreePlan, client)
+	return Hourly(para, key, count, plan, client)
 }
 
 // HourlyRequest 逐小时天气预报
@@ -407,10 +403,10 @@ func HourlyWithRequiredParam(location string, key qweather.Credential, count uin
 //	para 为请求参数
 //	key 为用户认证key
 //	count 为小时数
-//	isFreePlan 为是否为免费用户, 若是，则将上述API Host更改为devapi.qweather.com。参考免费订阅可用的数据(https://dev.qweather.com/docs/finance/subscription/#comparison)。
-func HourlyRequest(para *Para, key qweather.Credential, count uint8, isFreePlan bool) (*http.Request, error) {
+//	plan 订阅模式, 若是免费订阅, 则将上述API Host更改为devapi.qweather.com。参考免费订阅可用的数据(https://dev.qweather.com/docs/finance/subscription/#comparison)。
+func HourlyRequest(para *Para, key qweather.Credential, count uint8, plan qweather.Version) (*http.Request, error) {
 	r, err := util.Request(
-		url(isFreePlan, strconv.Itoa(int(count))+"h"), func(r *http.Request) {
+		url(plan, strconv.Itoa(int(count))+"h"), func(r *http.Request) {
 			q := nurl.Values{}
 			q.Add("location", para.Location)
 			q.Add("lang", para.Lang)
@@ -432,7 +428,7 @@ func HourlyRequest(para *Para, key qweather.Credential, count uint8, isFreePlan 
 // HourlyRequestWithRequiredParam 逐小时天气预报
 // para 为其余参数，可以为 nil
 // 详见 HourlyRequest
-func HourlyRequestWithRequiredParam(location string, key qweather.Credential, count uint8, para *Para, isFreePlan bool) (*http.Request, error) {
+func HourlyRequestWithRequiredParam(location string, key qweather.Credential, count uint8, para *Para, plan qweather.Version) (*http.Request, error) {
 	if para == nil {
 		para = &Para{
 			Location: location,
@@ -440,5 +436,5 @@ func HourlyRequestWithRequiredParam(location string, key qweather.Credential, co
 	} else {
 		para.Location = location
 	}
-	return HourlyRequest(para, key, count, isFreePlan)
+	return HourlyRequest(para, key, count, plan)
 }

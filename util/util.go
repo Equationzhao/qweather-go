@@ -6,6 +6,7 @@ import (
 	"os"
 
 	"github.com/Equationzhao/qweather-go"
+	iutil "github.com/Equationzhao/qweather-go/internal/util"
 )
 
 func Get(req *http.Request, client qweather.Client) ([]byte, error) {
@@ -52,4 +53,23 @@ func CheckNilClient(client qweather.Client) qweather.Client {
 		return qweather.NewDefaultClient()
 	}
 	return client
+}
+
+func UrlHelperBuilder(FreeEndPoint, StandardEndPoint string, ProEndPoint *string) func(isFreePlan qweather.Version, u ...string) string {
+	return func(isFreePlan qweather.Version, u ...string) string {
+		EndPoint := ""
+		switch isFreePlan {
+		case qweather.Free:
+			EndPoint = FreeEndPoint
+		case qweather.Standard:
+			EndPoint = StandardEndPoint
+		case qweather.Pro:
+			if ProEndPoint == nil {
+				return ""
+			}
+			EndPoint = *ProEndPoint
+		default:
+		}
+		return iutil.Url(EndPoint, u...)
+	}
 }

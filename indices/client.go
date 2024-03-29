@@ -8,7 +8,6 @@ import (
 
 	"github.com/Equationzhao/qweather-go"
 	"github.com/Equationzhao/qweather-go/internal/json"
-	iutil "github.com/Equationzhao/qweather-go/internal/util"
 	"github.com/Equationzhao/qweather-go/util"
 )
 
@@ -17,12 +16,9 @@ const (
 	FreeEndPoint = "https://devapi.qweather.com/v7/indices/"
 )
 
-func url(isFreePlan bool, u ...string) string {
-	if isFreePlan {
-		return iutil.Url(FreeEndPoint, u...)
-	}
-	return iutil.Url(EndPoint, u...)
-}
+var ProEndPoint *string = nil
+
+var url = util.UrlHelperBuilder(FreeEndPoint, EndPoint, ProEndPoint)
 
 // Indices 天气指数预报
 //
@@ -61,9 +57,9 @@ func url(isFreePlan bool, u ...string) string {
 //	para 为请求参数
 //	key 为用户认证key
 //	count 为天数
-//	isFreePlan 为是否为免费用户, 若是，则将上述API Host更改为devapi.qweather.com。参考免费订阅可用的数据(https://dev.qweather.com/docs/finance/subscription/#comparison)。
-func Indices(para *Para, key qweather.Credential, count uint8, isFreePlan bool, client qweather.Client) (*Response, error) {
-	request, err := IndicesRequest(para, key, count, isFreePlan)
+//	plan 订阅模式, 若是免费订阅, 则将上述API Host更改为devapi.qweather.com。参考免费订阅可用的数据(https://dev.qweather.com/docs/finance/subscription/#comparison)。
+func Indices(para *Para, key qweather.Credential, count uint8, plan qweather.Version, client qweather.Client) (*Response, error) {
+	request, err := IndicesRequest(para, key, count, plan)
 	if err != nil {
 		return nil, err
 	}
@@ -80,7 +76,7 @@ func Indices(para *Para, key qweather.Credential, count uint8, isFreePlan bool, 
 // IndicesWithRequiredParam 天气指数预报
 // para 为其余参数，可以为 nil
 // 详见 Indices
-func IndicesWithRequiredParam(location, Type string, para *Para, key qweather.Credential, count uint8, isFreePlan bool, client qweather.Client) (*Response, error) {
+func IndicesWithRequiredParam(location, Type string, para *Para, key qweather.Credential, count uint8, plan qweather.Version, client qweather.Client) (*Response, error) {
 	if para == nil {
 		para = &Para{
 			Location: location,
@@ -90,11 +86,11 @@ func IndicesWithRequiredParam(location, Type string, para *Para, key qweather.Cr
 		para.Location = location
 		para.Type = Type
 	}
-	return Indices(para, key, count, isFreePlan, client)
+	return Indices(para, key, count, plan, client)
 }
 
-func IndicesRequest(para *Para, key qweather.Credential, count uint8, isFreePlan bool) (*http.Request, error) {
-	r, err := util.Request(url(isFreePlan, strconv.Itoa(int(count))+"d"), func(req *http.Request) {
+func IndicesRequest(para *Para, key qweather.Credential, count uint8, plan qweather.Version) (*http.Request, error) {
+	r, err := util.Request(url(plan, strconv.Itoa(int(count))+"d"), func(req *http.Request) {
 		q := nurl.Values{}
 		q.Add("location", para.Location)
 		q.Add("lang", para.Lang)
@@ -115,7 +111,7 @@ func IndicesRequest(para *Para, key qweather.Credential, count uint8, isFreePlan
 // IndicesRequestWithRequiredParam 天气指数预报
 // para 为其余参数，可以为 nil
 // 详见 IndicesRequest
-func IndicesRequestWithRequiredParam(location, Type string, para *Para, key qweather.Credential, count uint8, isFreePlan bool) (*http.Request, error) {
+func IndicesRequestWithRequiredParam(location, Type string, para *Para, key qweather.Credential, count uint8, plan qweather.Version) (*http.Request, error) {
 	if para == nil {
 		para = &Para{
 			Location: location,
@@ -125,13 +121,13 @@ func IndicesRequestWithRequiredParam(location, Type string, para *Para, key qwea
 		para.Location = location
 		para.Type = Type
 	}
-	return IndicesRequest(para, key, count, isFreePlan)
+	return IndicesRequest(para, key, count, plan)
 }
 
-func Day1(para *Para, key qweather.Credential, isFreePlan bool, client qweather.Client) (*Response, error) {
-	return Indices(para, key, 1, isFreePlan, client)
+func Day1(para *Para, key qweather.Credential, plan qweather.Version, client qweather.Client) (*Response, error) {
+	return Indices(para, key, 1, plan, client)
 }
 
-func Day3(para *Para, key qweather.Credential, isFreePlan bool, client qweather.Client) (*Response, error) {
-	return Indices(para, key, 3, isFreePlan, client)
+func Day3(para *Para, key qweather.Credential, plan qweather.Version, client qweather.Client) (*Response, error) {
+	return Indices(para, key, 3, plan, client)
 }

@@ -22,9 +22,9 @@ var (
 )
 
 func TestDays(t *testing.T) {
-	fs := [...]func(para *Para, key qweather.Credential, isFreePlan bool, client qweather.Client) (*Response, error){Day1, Day3}
+	fs := []func(para *Para, key qweather.Credential, plan qweather.Version, client qweather.Client) (*Response, error){Day1, Day3}
 	for _, f := range fs {
-		day, err := f(para, key, true, &itest.NoProxyClient)
+		day, err := f(para, key, qweather.Free, &itest.NoProxyClient)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -39,7 +39,7 @@ func TestDays(t *testing.T) {
 func TestIndicesWithRequiredParam(t *testing.T) {
 	days := [...]uint8{1, 3}
 	for _, day := range days {
-		r, err := IndicesWithRequiredParam(Location, Type, para, key, day, true, &itest.NoProxyClient)
+		r, err := IndicesWithRequiredParam(Location, Type, para, key, day, qweather.Free, &itest.NoProxyClient)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -53,7 +53,7 @@ func TestIndicesWithRequiredParam(t *testing.T) {
 func TestIndicesRequestWithRequiredParam(t *testing.T) {
 	days := [...]uint8{1, 3}
 	for _, day := range days {
-		r, err := IndicesRequestWithRequiredParam(Location, Type, para, key, day, true)
+		r, err := IndicesRequestWithRequiredParam(Location, Type, para, key, day, qweather.Free)
 		if err != nil {
 			t.Fatal(err)
 		}

@@ -7,7 +7,6 @@ import (
 
 	"github.com/Equationzhao/qweather-go"
 	"github.com/Equationzhao/qweather-go/internal/json"
-	iutil "github.com/Equationzhao/qweather-go/internal/util"
 	"github.com/Equationzhao/qweather-go/util"
 )
 
@@ -16,12 +15,9 @@ const (
 	FreeEndPoint = "https://devapi.qweather.com/v7/minutely/5m"
 )
 
-func url(isFreePlan bool, u ...string) string {
-	if isFreePlan {
-		return iutil.Url(FreeEndPoint, u...)
-	}
-	return iutil.Url(EndPoint, u...)
-}
+var ProEndPoint *string = nil
+
+var url = util.UrlHelperBuilder(FreeEndPoint, EndPoint, ProEndPoint)
 
 // MinPrecipitation 分钟级降水
 //
@@ -47,12 +43,12 @@ func url(isFreePlan bool, u ...string) string {
 //
 //	para 为请求参数
 //	key 为用户认证key
-//	isFreePlan 为是否是免费用户
+//	plan 为是否是免费用户
 //	client 为自定义的 Client, 若为nil, 则使用http.DefaultClient
-func MinPrecipitation(para *Para, key qweather.Credential, isFreePlan bool, client qweather.Client) (
+func MinPrecipitation(para *Para, key qweather.Credential, plan qweather.Version, client qweather.Client) (
 	*MinPrecipitationResponse, error,
 ) {
-	request, err := MinPrecipitationRequest(para, key, isFreePlan)
+	request, err := MinPrecipitationRequest(para, key, plan)
 	if err != nil {
 		return nil, err
 	}
@@ -72,7 +68,7 @@ func MinPrecipitation(para *Para, key qweather.Credential, isFreePlan bool, clie
 // MinPrecipitationWithRequiredParam 分钟级降水
 // para 为其余参数，可以为 nil
 // 详见 MinPrecipitation
-func MinPrecipitationWithRequiredParam(location string, key qweather.Credential, para *Para, isFreePlan bool, client qweather.Client) (
+func MinPrecipitationWithRequiredParam(location string, key qweather.Credential, para *Para, plan qweather.Version, client qweather.Client) (
 	*MinPrecipitationResponse, error,
 ) {
 	if para == nil {
@@ -82,7 +78,7 @@ func MinPrecipitationWithRequiredParam(location string, key qweather.Credential,
 	} else {
 		para.Location = location
 	}
-	return MinPrecipitation(para, key, isFreePlan, client)
+	return MinPrecipitation(para, key, plan, client)
 }
 
 // MinPrecipitationRequest 分钟级降水
@@ -109,10 +105,10 @@ func MinPrecipitationWithRequiredParam(location string, key qweather.Credential,
 //
 //	para 为请求参数
 //	key 为用户认证key
-//	isFreePlan 为是否是免费用户
-func MinPrecipitationRequest(para *Para, key qweather.Credential, isFreePlan bool) (*http.Request, error) {
+//	plan 为是否是免费用户
+func MinPrecipitationRequest(para *Para, key qweather.Credential, plan qweather.Version) (*http.Request, error) {
 	r, err := util.Request(
-		url(isFreePlan), func(r *http.Request) {
+		url(plan), func(r *http.Request) {
 			q := nurl.Values{}
 			q.Add("location", para.Location)
 			q.Add("lang", para.Lang)
@@ -133,7 +129,7 @@ func MinPrecipitationRequest(para *Para, key qweather.Credential, isFreePlan boo
 // MinPrecipitationRequestWithRequiredParam 分钟级降水
 // para 为其余参数，可以为 nil
 // 详见 MinPrecipitationRequest
-func MinPrecipitationRequestWithRequiredParam(location string, key qweather.Credential, para *Para, isFreePlan bool) (
+func MinPrecipitationRequestWithRequiredParam(location string, key qweather.Credential, para *Para, plan qweather.Version) (
 	*http.Request, error,
 ) {
 	if para == nil {
@@ -143,5 +139,5 @@ func MinPrecipitationRequestWithRequiredParam(location string, key qweather.Cred
 	} else {
 		para.Location = location
 	}
-	return MinPrecipitationRequest(para, key, isFreePlan)
+	return MinPrecipitationRequest(para, key, plan)
 }

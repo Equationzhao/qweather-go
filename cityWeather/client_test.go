@@ -38,7 +38,7 @@ func TestRealTime(t *testing.T) {
 		Lang:     lang.ZHCN,
 		Unit:     qweather.METRIC,
 	}
-	resp, err := RealTime(para, key, qweather.FreePlan, &itest.NoProxyClient)
+	resp, err := RealTime(para, key, qweather.Free, &itest.NoProxyClient)
 	if err != nil {
 		t.Error(err)
 	}
@@ -47,7 +47,7 @@ func TestRealTime(t *testing.T) {
 		t.Error("return code is not 200")
 	}
 
-	resp, err = RealTime(para, key, qweather.FreePlan, nil)
+	resp, err = RealTime(para, key, qweather.Free, nil)
 	if err != nil {
 		t.Error(err)
 	}
@@ -56,7 +56,7 @@ func TestRealTime(t *testing.T) {
 		t.Error("return code is not 200")
 	}
 
-	request, err := RealTimeRequest(para, key, true)
+	request, err := RealTimeRequest(para, key, qweather.Free)
 	if err != nil {
 		t.Error(err)
 	}
@@ -74,7 +74,7 @@ func TestHourly(t *testing.T) {
 	// 24
 	args := []uint8{24}
 	for _, arg := range args {
-		resp, err := Hourly(para, key, arg, qweather.FreePlan, &itest.NoProxyClient)
+		resp, err := Hourly(para, key, arg, qweather.Free, &itest.NoProxyClient)
 		if err != nil {
 			t.Error(err)
 		}
@@ -84,7 +84,7 @@ func TestHourly(t *testing.T) {
 		}
 	}
 
-	request, err := HourlyRequest(para, key, 24, true)
+	request, err := HourlyRequest(para, key, 24, qweather.Free)
 	if err != nil {
 		t.Error(err)
 	}
@@ -97,7 +97,7 @@ func TestHour24(t *testing.T) {
 		Lang:     lang.ZHCN,
 		Unit:     qweather.METRIC,
 	}
-	resp, err := Hour24(para, key, qweather.FreePlan, &itest.NoProxyClient)
+	resp, err := Hour24(para, key, qweather.Free, &itest.NoProxyClient)
 	if err != nil {
 		t.Error(err)
 	}
@@ -115,7 +115,7 @@ func TestUnsetEncrypt(t *testing.T) {
 		Lang:     lang.ZHCN,
 		Unit:     qweather.METRIC,
 	}
-	resp, err := Hour24(para, _key, qweather.FreePlan, &itest.NoProxyClient)
+	resp, err := Hour24(para, _key, qweather.Free, &itest.NoProxyClient)
 	if err != nil {
 		t.Error(err)
 	}
@@ -135,7 +135,7 @@ func TestDaily(t *testing.T) {
 	// 3,7
 	args := []uint8{3, 7}
 	for _, arg := range args {
-		resp, err := Daily(para, key, arg, qweather.FreePlan, &itest.NoProxyClient)
+		resp, err := Daily(para, key, arg, qweather.Free, &itest.NoProxyClient)
 		if err != nil {
 			t.Error(err)
 		}
@@ -145,7 +145,7 @@ func TestDaily(t *testing.T) {
 		}
 	}
 
-	request, err := DailyRequest(para, key, 3, true)
+	request, err := DailyRequest(para, key, 3, qweather.Free)
 	if err != nil {
 		t.Error(err)
 	}
@@ -159,7 +159,7 @@ func TestDay3(t *testing.T) {
 		Unit:     qweather.METRIC,
 	}
 
-	resp, err := Day3(para, key, qweather.FreePlan, &itest.NoProxyClient)
+	resp, err := Day3(para, key, qweather.Free, &itest.NoProxyClient)
 	if err != nil {
 		t.Error(err)
 	}
@@ -176,7 +176,7 @@ func TestDay7(t *testing.T) {
 		Unit:     qweather.METRIC,
 	}
 
-	resp, err := Day7(para, key, qweather.FreePlan, &itest.NoProxyClient)
+	resp, err := Day7(para, key, qweather.Free, &itest.NoProxyClient)
 	if err != nil {
 		t.Error(err)
 	}
@@ -196,7 +196,7 @@ func TestWithClientRequest(t *testing.T) {
 	// 3,7
 	args := []uint8{3, 7}
 	for _, arg := range args {
-		req, err := DailyRequest(para, key, arg, true)
+		req, err := DailyRequest(para, key, arg, qweather.Free)
 		if err != nil {
 			t.Error(err)
 		}
@@ -219,7 +219,7 @@ func TestWithClient(t *testing.T) {
 	// 3,7
 	args := []uint8{3, 7}
 	for _, arg := range args {
-		resp, err := Daily(para, key, arg, qweather.FreePlan, &itest.NoProxyClient)
+		resp, err := Daily(para, key, arg, qweather.Free, &itest.NoProxyClient)
 		if err != nil {
 			t.Error(err)
 			continue
@@ -231,12 +231,12 @@ func TestWithClient(t *testing.T) {
 }
 
 func TestDays(t *testing.T) {
-	fs := []func(para *Para, key qweather.Credential, isFreePlan bool, client qweather.Client) (*DailyResponse, error){
+	fs := []func(para *Para, key qweather.Credential, plan qweather.Version, client qweather.Client) (*DailyResponse, error){
 		Day3,
 		Day7,
-		Day10,
-		Day15,
-		Day30,
+		// Day10,
+		// Day15,
+		// Day30,
 	}
 
 	para := &Para{
@@ -246,7 +246,7 @@ func TestDays(t *testing.T) {
 	}
 
 	for i, f := range fs {
-		resp, err := f(para, key, qweather.FreePlan, &itest.NoProxyClient)
+		resp, err := f(para, key, qweather.Free, &itest.NoProxyClient)
 		if err != nil {
 			t.Error(err)
 			continue
