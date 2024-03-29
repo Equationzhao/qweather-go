@@ -46,3 +46,10 @@ func Credential(key, publicId string) *qweather.Credential {
 	}
 	return &c
 }
+
+func CheckNilClient(client qweather.Client) qweather.Client {
+	if client == nil {
+		return qweather.NewDefaultClient()
+	}
+	return client
+}

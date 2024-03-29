@@ -56,9 +56,7 @@ func RealTime(para *Para, key qweather.Credential, isFreePlan bool, client qweat
 	if err != nil {
 		return nil, err
 	}
-	if client == nil {
-		client = http.DefaultClient
-	}
+	client = util.CheckNilClient(client)
 	get, err := util.Get(request, client)
 	if err != nil {
 		return nil, err
@@ -189,9 +187,7 @@ func Daily(para *Para, key qweather.Credential, count uint8, isFreePlan bool, cl
 	if err != nil {
 		return nil, err
 	}
-	if client == nil {
-		client = http.DefaultClient
-	}
+	client = util.CheckNilClient(client)
 	get, err := util.Get(req, client)
 	if err != nil {
 		return nil, err
@@ -339,9 +335,7 @@ func Hourly(para *Para, key qweather.Credential, count uint8, isFreePlan bool, c
 	if err != nil {
 		return nil, err
 	}
-	if client == nil {
-		client = http.DefaultClient
-	}
+	client = util.CheckNilClient(client)
 	get, err := util.Get(req, client)
 	if err != nil {
 		return nil, err

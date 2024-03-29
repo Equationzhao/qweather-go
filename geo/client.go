@@ -69,9 +69,7 @@ func SearchCity(para *Para, key qweather.Credential, client qweather.Client) (*S
 	if err != nil {
 		return nil, err
 	}
-	if client == nil {
-		client = http.DefaultClient
-	}
+	client = util.CheckNilClient(client)
 	get, err := util.Get(req, client)
 	if err != nil {
 		return nil, err
@@ -214,9 +212,7 @@ func HitCity(para *Para, key qweather.Credential, client qweather.Client) (*HitR
 	if err != nil {
 		return nil, err
 	}
-	if client == nil {
-		client = http.DefaultClient
-	}
+	client = util.CheckNilClient(client)
 	get, err := util.Get(req, client)
 	if err != nil {
 		return nil, err
@@ -326,9 +322,7 @@ func POI(para *Para, key qweather.Credential, client qweather.Client) (*POIRespo
 	if err != nil {
 		return nil, err
 	}
-	if client == nil {
-		client = http.DefaultClient
-	}
+	client = util.CheckNilClient(client)
 	var response POIResponse
 	get, err := util.Get(req, client)
 	if err != nil {
@@ -479,9 +473,7 @@ func POIRange(para *Para, key qweather.Credential, client qweather.Client) (*POI
 	if err != nil {
 		return nil, err
 	}
-	if client == nil {
-		client = http.DefaultClient
-	}
+	client = util.CheckNilClient(client)
 	var response POIResponse
 	get, err := util.Get(req, client)
 	if err != nil {

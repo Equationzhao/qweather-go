@@ -47,14 +47,12 @@ func url(isFreePlan bool, u ...string) string {
 //	key 为用户认证key
 //	isFreePlan 为是否是免费用户
 //	client 为自定义的 Client, 若为nil, 则使用http.DefaultClient
-func RealTime(para *Para, key qweather.Credential, isFreePlan bool, client *http.Client) (*RealTimeResponse, error) {
+func RealTime(para *Para, key qweather.Credential, isFreePlan bool, client qweather.Client) (*RealTimeResponse, error) {
 	request, err := RealTimeRequest(para, key, isFreePlan)
 	if err != nil {
 		return nil, err
 	}
-	if client == nil {
-		client = http.DefaultClient
-	}
+	client = util.CheckNilClient(client)
 	get, err := util.Get(request, client)
 	if err != nil {
 		return nil, err
@@ -70,7 +68,7 @@ func RealTime(para *Para, key qweather.Credential, isFreePlan bool, client *http
 // RealTimeWithRequiredParam 实时灾害预警
 // para 为其余参数，可以为 nil
 // 详见 RealTime
-func RealTimeWithRequiredParam(location string, para *Para, key qweather.Credential, isFreePlan bool, client *http.Client) (*RealTimeResponse, error) {
+func RealTimeWithRequiredParam(location string, para *Para, key qweather.Credential, isFreePlan bool, client qweather.Client) (*RealTimeResponse, error) {
 	if para == nil {
 		para = &Para{
 			Location: location,
@@ -157,14 +155,12 @@ func RealTimeRequestWithRequiredParam(location string, para *Para, key qweather.
 //	key 为用户认证key
 //	isFreePlan 为是否是免费用户
 //	client 为自定义的 Client, 若为nil, 则使用http.DefaultClient
-func CityList(para *Para, key qweather.Credential, isFreePlan bool, client *http.Client) (*CityListResponse, error) {
+func CityList(para *Para, key qweather.Credential, isFreePlan bool, client qweather.Client) (*CityListResponse, error) {
 	request, err := CityListRequest(para, key, isFreePlan)
 	if err != nil {
 		return nil, err
 	}
-	if client == nil {
-		client = http.DefaultClient
-	}
+	client = util.CheckNilClient(client)
 	get, err := util.Get(request, client)
 	if err != nil {
 		return nil, err
@@ -180,7 +176,7 @@ func CityList(para *Para, key qweather.Credential, isFreePlan bool, client *http
 // CityListWithRequiredParam 天气预警城市列表
 // para 为其余参数，可以为 nil
 // 详见 CityList
-func CityListWithRequiredParam(Range string, para *Para, key qweather.Credential, isFreePlan bool, client *http.Client) (*CityListResponse, error) {
+func CityListWithRequiredParam(Range string, para *Para, key qweather.Credential, isFreePlan bool, client qweather.Client) (*CityListResponse, error) {
 	if para == nil {
 		para = &Para{
 			Range: Range,

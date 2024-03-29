@@ -56,9 +56,7 @@ func MinPrecipitation(para *Para, key qweather.Credential, isFreePlan bool, clie
 	if err != nil {
 		return nil, err
 	}
-	if client == nil {
-		client = http.DefaultClient
-	}
+	client = util.CheckNilClient(client)
 	get, err := util.Get(request, client)
 	if err != nil {
 		return nil, err

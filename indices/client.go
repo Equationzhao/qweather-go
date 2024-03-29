@@ -67,6 +67,7 @@ func Indices(para *Para, key qweather.Credential, count uint8, isFreePlan bool, 
 	if err != nil {
 		return nil, err
 	}
+	client = util.CheckNilClient(client)
 	get, err := util.Get(request, client)
 	var resp Response
 	err = json.Unmarshal(get, &resp)
